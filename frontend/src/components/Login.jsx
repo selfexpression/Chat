@@ -1,7 +1,9 @@
 import React from 'react';
 import { Formik, Form, Field } from 'formik';
 import * as Yup from 'yup';
+import axios from 'axios';
 import image from '../assets/login.jpeg';
+import routes from '../routes.js';
 
 const schema = Yup.object().shape({
   username: Yup.string()
@@ -14,8 +16,9 @@ const LoginForm = () => (
   <Formik
     initialValues={{ username: '', password: '' }}
     validationSchema={schema}
-    onSubmit={(values) => {
-      console.log(values);
+    onSubmit={async (values) => {
+      const response = axios.post(routes.loginPath(), values);
+      console.log(response);
     }}
   >
     {() => (
