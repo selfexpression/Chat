@@ -7,7 +7,7 @@ import store from './slices/index.js';
 const runApp = () => {
   const mountNode = document.getElementById('chat');
   const root = ReactDOM.createRoot(mountNode);
-  console.log(store);
+
   root.render(
     <Provider store={store}>
       <App />

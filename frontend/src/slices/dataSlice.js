@@ -1,4 +1,4 @@
-import { createSlice, createEntityAdapter, createAsyncThunk } from '@reduxjs/toolkit';
+import { createSlice, createEntityAdapter } from '@reduxjs/toolkit';
 import axios from 'axios';
 import routes from '../routes.js';
 
@@ -12,15 +12,11 @@ const getAuthHeader = () => {
   return {};
 };
 
-export const getDataAsync = () => createAsyncThunk(
-  'data/getDataAsync',
-  async () => {
-    const header = getAuthHeader();
-    const { Authorization } = header;
-    const response = await axios.get(routes.dataPath(), { preValidation: [Authorization] });
-    return response.data;
-  },
-);
+export const getAxiosData = async () => {
+  const headers = getAuthHeader();
+  const response = await axios.get(routes.dataPath(), { headers });
+  return response.data;
+};
 
 const dataAdapter = createEntityAdapter();
 const initialState = dataAdapter.getInitialState();
@@ -30,7 +26,7 @@ const slice = createSlice({
   initialState,
   extraReducers: (builder) => {
     builder
-      .addCase(getDataAsync.fulfilled, dataAdapter.addMany);
+      .addCase(getAxiosData.fulfilled, dataAdapter.addMany);
   },
 });
 
