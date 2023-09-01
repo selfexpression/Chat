@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  Formik, Form, Field, ErrorMessage,
+  Formik, Form, Field,
 } from 'formik';
 import { useNavigate } from 'react-router-dom';
 import * as Yup from 'yup';
@@ -52,11 +52,6 @@ const LoginForm = () => {
               id="username"
               className={`form-control ${errors.auth ? 'is-invalid' : ''}`}
               placeholder="Ваш ник"
-            />
-            <ErrorMessage
-              component="div"
-              name="username"
-              className="invalid-feedback"
             />
             <label htmlFor="username" className="form-label">Ваш ник</label>
           </div>
