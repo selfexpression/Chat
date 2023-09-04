@@ -1,10 +1,9 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
-import { dataSelectors } from '../slices/dataSlice.js';
+import { messagesSelectors } from '../slices/messagesSlice.js';
 
 const MessagesBox = () => {
-  const data = useSelector(dataSelectors.selectAll);
-  const messages = data.flatMap((item) => item.messages);
+  const messages = useSelector(messagesSelectors.selectAll);
 
   return (
     <div id="messages-box" className="chat-messages overflow-auto px-5 ">
