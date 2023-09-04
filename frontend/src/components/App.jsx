@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import LoginForm from './Login.jsx';
 import NotFound from './NotFound.jsx';
@@ -9,13 +9,17 @@ const ContextProvider = ({ children }) => {
   const currentUser = localStorage.getItem('user');
   const [user, setUser] = useState(currentUser ?? null);
 
-  const login = (data) => {
-    localStorage.setItem('user', data.username);
-    setUser(currentUser);
-  };
+  const values = useMemo(() => {
+    const login = (data) => {
+      localStorage.setItem('user', data.username);
+      setUser(currentUser);
+    };
+
+    return { login, user };
+  }, [currentUser, user]);
 
   return (
-    <AuthContext.Provider value={{ login, user }}>
+    <AuthContext.Provider value={values}>
       {children}
     </AuthContext.Provider>
   );
