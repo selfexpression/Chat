@@ -1,8 +1,9 @@
 import axios from 'axios';
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { actions as dataActions, selectors } from '../slices/dataSlice.js';
+import { actions as dataActions, dataSelectors } from '../slices/dataSlice.js';
 import routes from '../routes.js';
+import ChatBox from './ChatBox.jsx';
 
 const getAuthHeader = () => {
   const userId = localStorage.getItem('userId');
@@ -27,8 +28,10 @@ const Channels = () => {
     getAxiosData();
   });
 
-  const data = useSelector(selectors.selectAll);
-  const channels = data.flatMap((entity) => entity.channels);
+  const data = useSelector(dataSelectors.selectAll);
+  const channels = data.flatMap((item) => item.channels);
+  const currentId = data.map((item) => item.currentChannelId);
+  const currentChannel = channels.find((channel) => channel.id === currentId[0]);
 
   return (
     <div className="container h-100 my-4 overflow-hidden rounded shadow">
@@ -37,7 +40,6 @@ const Channels = () => {
           <div className="d-flex mt-1 justify-content-between mb-2 ps-4 pe-2 p-4">
             <b>Каналы</b>
             <button type="button" className="p-0 text-primary btn btn-group-vertical">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width={20} height={20} fill="currentColor" />
               <span className="visually-hidden">+</span>
             </button>
           </div>
@@ -52,6 +54,7 @@ const Channels = () => {
             ))}
           </ul>
         </div>
+        <ChatBox channel={currentChannel} />
       </div>
     </div>
   );

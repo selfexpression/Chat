@@ -13,6 +13,6 @@ const slice = createSlice({
   },
 });
 
-export const selectors = dataAdapter.getSelectors((state) => state.data);
+export const dataSelectors = dataAdapter.getSelectors((state) => state.data);
 export const { actions } = slice;
 export default slice.reducer;
