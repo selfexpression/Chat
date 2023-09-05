@@ -2,7 +2,7 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 import { messagesSelectors } from '../slices/messagesSlice.js';
 
-const MessagesBox = () => {
+const Messages = () => {
   const messages = useSelector(messagesSelectors.selectAll);
 
   return (
@@ -18,4 +18,4 @@ const MessagesBox = () => {
   );
 };
 
-export default MessagesBox;
+export default Messages;

@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import LoginForm from './Login.jsx';
 import NotFound from './NotFound.jsx';
-import Channels from './Channels.jsx';
+import Channels from './ChannelsBox.jsx';
 import { AuthContext } from '../contexts/index.js';
 
 const ContextProvider = ({ children }) => {
