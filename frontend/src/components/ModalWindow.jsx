@@ -138,7 +138,87 @@ const RemoveChannel = ({ handleRemove, handleClose }) => (
   </>
 );
 
-const ModalWindow = () => {
+const RenameChannel = ({ handleClose, handleRename }) => {
+  const { channels } = useSelector(getData);
+  const inputRef = useRef(null);
+
+  useEffect(() => {
+    inputRef.current.select();
+  }, []);
+
+  const formik = useFormik({
+    initialValues: {
+      name: '',
+    },
+    validationSchema: Yup.object().shape({
+      name: Yup.string().min(3, 'От 3 до 20 символов').max(20)
+        .test('is-unique', 'Должно быть уникальным', (value) => {
+          if (!value) return true;
+
+          return !channels.some((channel) => channel.name === value);
+        }),
+    }),
+    onSubmit: ({ name }, { setSubmitting }) => {
+      handleRename(name);
+      setSubmitting(false);
+      handleClose();
+    },
+  });
+
+  return (
+    <>
+      <Modal.Header>
+        <Modal.Title>Переименовать канал</Modal.Title>
+        <Button
+          variant="close"
+          type="button"
+          onClick={handleClose}
+          aria-label="Close"
+          data-bs-dismiss="modal"
+        />
+      </Modal.Header>
+      <Modal.Body>
+        <Form onSubmit={formik.handleSubmit}>
+          <div>
+            <InputGroup>
+              <FormControl
+                name="name"
+                type="text"
+                className={cn('mb-2', { 'is-invalid': !formik.isValid })}
+                onChange={formik.handleChange}
+                value={formik.values.name}
+                ref={inputRef}
+                disabled={formik.isSubmitting}
+              />
+              {formik.errors.name
+                ? (<div className="invalid-feedback">{formik.errors.name}</div>)
+                : null}
+            </InputGroup>
+            <div className="d-flex justify-content-end">
+              <Button
+                variant="secondary"
+                className="me-2"
+                onClick={handleClose}
+              >
+                Отменить
+              </Button>
+              <Button
+                variant="primary"
+                type="submit"
+                className="me-2"
+                disabled={formik.isSubmitting}
+              >
+                Отправить
+              </Button>
+            </div>
+          </div>
+        </Form>
+      </Modal.Body>
+    </>
+  );
+};
+
+const ModalWindow = ({ currentId }) => {
   const dispatch = useDispatch();
   const { isShow, type } = useSelector(getModal);
 
@@ -146,9 +226,13 @@ const ModalWindow = () => {
     dispatch(modalActions.modalControl(!isShow));
   };
 
-  const handleRemove = (name) => () => {
-    dispatch(dataActions.removeChannel(name));
+  const handleRemove = () => {
+    dispatch(dataActions.removeChannel(currentId));
     handleClose();
+  };
+
+  const handleRename = (name) => {
+    dispatch(dataActions.renameChannel({ currentId, name }));
   };
 
   const mappingModals = {
@@ -157,7 +241,11 @@ const ModalWindow = () => {
     />,
     removeChannel: <RemoveChannel
       handleRemove={handleRemove}
-      andleClose={handleClose}
+      handleClose={handleClose}
+    />,
+    renameChannel: <RenameChannel
+      handleClose={handleClose}
+      handleRename={handleRename}
     />,
   };
 

@@ -15,6 +15,7 @@ import { getData, getModal } from '../selectors.js';
 
 const ChannelsBox = () => {
   const [dataLoaded, setDataLoaded] = useState(false);
+  const [currentId, setCurrentId] = useState(null);
   const { isShow } = useSelector(getModal);
   const auth = useAuth();
   const dispatch = useDispatch();
@@ -42,18 +43,24 @@ const ChannelsBox = () => {
     dispatch(dataActions.setChannel(id));
   };
 
-  const handleModal = (type, name = null) => () => {
-    dispatch(modalActions.modalControl({ value: !isShow, type, name }));
+  const handleModal = (type) => () => {
+    dispatch(modalActions.modalControl({ value: !isShow, type }));
+  };
+
+  const handleCurrentId = (id, type) => () => {
+    handleModal(type)();
+    setCurrentId(id);
   };
 
   const types = {
     newChannel: 'newChannel',
     removeChannel: 'removeChannel',
+    renameChannel: 'renameChannel',
   };
 
   return (
     <>
-      {isShow ? <ModalWindow /> : null}
+      {isShow ? <ModalWindow currentId={currentId} /> : null}
       <div className="container h-100 my-4 overflow-hidden rounded shadow">
         <div className="row h-100 bg-white flex-md-row">
           <div className="col-4 col-md-2 border-end px-0 bg-light flex-column h-100 d-flex">
@@ -90,12 +97,10 @@ const ChannelsBox = () => {
                           id="dropdown-split-basic"
                         />
                         <Dropdown.Menu>
-                          <Dropdown.Item
-                            onClick={handleModal(types.removeChannel)}
-                          >
+                          <Dropdown.Item onClick={handleCurrentId(id, types.removeChannel)}>
                             Удалить
                           </Dropdown.Item>
-                          <Dropdown.Item>
+                          <Dropdown.Item onClick={handleCurrentId(id, types.renameChannel)}>
                             Переименовать
                           </Dropdown.Item>
                         </Dropdown.Menu>
