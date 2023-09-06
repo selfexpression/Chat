@@ -15,7 +15,17 @@ const ContextProvider = ({ children }) => {
       setUser(currentUser);
     };
 
-    return { login, user };
+    const getAuthHeader = () => {
+      const userId = localStorage.getItem('userId');
+
+      if (userId) {
+        return { Authorization: `Bearer ${userId}` };
+      }
+
+      return {};
+    };
+
+    return { login, user, getAuthHeader };
   }, [currentUser, user]);
 
   return (

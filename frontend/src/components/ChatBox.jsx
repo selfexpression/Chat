@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { useFormik } from 'formik';
-import { Button, Form } from 'react-bootstrap';
+import { ArrowRightSquare } from 'react-bootstrap-icons';
+import { Button, Form, InputGroup } from 'react-bootstrap';
 import { useAuth, useApi } from '../hooks/index.js';
 import MessagesBox from './MessagesBox.jsx';
 
@@ -40,24 +41,28 @@ const Chat = ({ channel }) => {
         </div>
         <MessagesBox />
         <div className="mt-auto px-5 py-3">
-          <Form noValidate className="py-1 border rounded-2" onSubmit={formik.handleSubmit}>
-            <Form.Group className="input-group has-validation">
+          <Form
+            noValidate
+            className="py-1 border"
+            onSubmit={formik.handleSubmit}
+          >
+            <InputGroup className="rounded-2">
               <Form.Control
                 name="body"
+                id="body"
+                type="text"
                 aria-label="Новое сообщение"
                 placeholder="Введите новое сообщение..."
-                className="border-0 p-0 ps-2 form-control"
+                className="border-0 p-0 ps-2 rounded-2"
                 onChange={formik.handleChange}
                 value={formik.values.text}
                 ref={inputRef}
               />
-              <Button
-                type="submit"
-                className="btn btn-group-vertical"
-              >
+              <Button type="submit" variant="group-vertical">
+                <ArrowRightSquare size={20} />
                 <span className="visually-hidden">Отправить</span>
               </Button>
-            </Form.Group>
+            </InputGroup>
           </Form>
         </div>
       </div>

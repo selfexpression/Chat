@@ -22,13 +22,7 @@ const Login = () => {
     inputRef.current.focus();
   }, []);
 
-  const {
-    errors,
-    handleChange,
-    handleSubmit,
-    isValid,
-    isSubmitting,
-  } = useFormik({
+  const formik = useFormik({
     initialValues: {
       username: '',
       password: '',
@@ -62,16 +56,16 @@ const Login = () => {
               <div className="col-12 col-md-6 d-flex align-items-center justify-content-center">
                 <img src={image} className="rounded-circle" alt="login" />
               </div>
-              <Form className="col-12 col-md-6 mt-3 mt-md-0" onSubmit={handleSubmit}>
+              <Form className="col-12 col-md-6 mt-3 mt-md-0" onSubmit={formik.handleSubmit}>
                 <h1 className="text-center mb-4">Войти</h1>
                 <Form.Group className="form-floating mb-3">
                   <Form.Control
                     type="text"
                     name="username"
                     id="username"
-                    className={`form-control ${errors.auth ? 'is-invalid' : ''}`}
+                    className={`form-control ${formik.errors.auth ? 'is-invalid' : ''}`}
                     placeholder="Ваш ник"
-                    onChange={handleChange}
+                    onChange={formik.handleChange}
                     ref={inputRef}
                   />
                   <label htmlFor="username" className="form-label">Ваш ник</label>
@@ -81,18 +75,18 @@ const Login = () => {
                     type="password"
                     name="password"
                     id="password"
-                    className={`form-control ${errors.auth ? 'is-invalid' : ''}`}
+                    className={`form-control ${formik.errors.auth ? 'is-invalid' : ''}`}
                     placeholder="Пароль"
-                    onChange={handleChange}
+                    onChange={formik.handleChange}
                   />
-                  {errors.auth ? (<div className="invalid-tooltip">{errors.auth}</div>) : null}
+                  {formik.errors.auth ? (<div className="invalid-tooltip">{formik.errors.auth}</div>) : null}
                   <label htmlFor="password" className="form-label">Пароль</label>
                 </Form.Group>
                 <Button
                   type="submit"
                   variant="outline-primary"
                   className="w-100 mb-3"
-                  disabled={!isValid || isSubmitting}
+                  disabled={!formik.isValid || formik.isSubmitting}
                 >
                   Войти
                 </Button>
