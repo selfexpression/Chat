@@ -2,6 +2,7 @@ import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
   isShow: false,
+  type: null,
 };
 
 const slice = createSlice({
@@ -9,7 +10,9 @@ const slice = createSlice({
   initialState,
   reducers: {
     modalControl: (state, { payload }) => {
-      state.isShow = payload;
+      const { value, type } = payload;
+      state.isShow = value;
+      state.type = type;
     },
   },
 });

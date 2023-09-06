@@ -10,14 +10,15 @@ import { actions as modalActions } from '../slices/modalSlice.js';
 import routes from '../routes.js';
 import ChatBox from './ChatBox.jsx';
 import { useAuth } from '../hooks/index.js';
-import NewChannel from './Modal.jsx';
+import ModalWindow from './ModalWindow.jsx';
+import { getData, getModal } from '../selectors.js';
 
 const ChannelsBox = () => {
   const [dataLoaded, setDataLoaded] = useState(false);
-  const { isShow } = useSelector((state) => state.modal);
+  const { isShow } = useSelector(getModal);
   const auth = useAuth();
   const dispatch = useDispatch();
-  const data = useSelector((state) => state.data);
+  const data = useSelector(getData);
 
   useEffect(() => {
     const getAxiosData = async () => {
@@ -41,13 +42,18 @@ const ChannelsBox = () => {
     dispatch(dataActions.setChannel(id));
   };
 
-  const handleModal = () => {
-    dispatch(modalActions.modalControl(!isShow));
+  const handleModal = (type, name = null) => () => {
+    dispatch(modalActions.modalControl({ value: !isShow, type, name }));
+  };
+
+  const types = {
+    newChannel: 'newChannel',
+    removeChannel: 'removeChannel',
   };
 
   return (
     <>
-      {isShow ? <NewChannel handles={handleChannel} /> : null}
+      {isShow ? <ModalWindow /> : null}
       <div className="container h-100 my-4 overflow-hidden rounded shadow">
         <div className="row h-100 bg-white flex-md-row">
           <div className="col-4 col-md-2 border-end px-0 bg-light flex-column h-100 d-flex">
@@ -57,35 +63,54 @@ const ChannelsBox = () => {
                 type="button"
                 variant="group-vertical"
                 className="p-0 text-primary"
-                onClick={handleModal}
+                onClick={handleModal(types.newChannel)}
               >
                 <PlusSquare size={20} />
                 <span className="visually-hidden">+</span>
               </Button>
             </div>
             <ul id="channels-box" className="nav flex-column nav-pills nav-fill px-2 mb-3 overflow-auto h-100 d-block">
-              {channels.map(({ id, name }) => (
+              {channels.map(({ id, name, removable }) => (
                 <li key={id} className="nav-item w-100">
-                  <Dropdown as={ButtonGroup} className="d-flex">
-                    <Button
-                      className="w-100 rounded-0 text-start text-truncate"
-                      variant={id === currentChannelId ? 'secondary' : ''}
-                      onClick={handleChannel(id)}
-                    >
-                      <span className="me-1">#</span>
-                      {name}
-                    </Button>
-                    <Dropdown.Toggle
-                      split
-                      className="flex-grow-0"
-                      variant={id === currentChannelId ? 'secondary' : ''}
-                      id="dropdown-split-basic"
-                    />
-                    <Dropdown.Menu>
-                      <Dropdown.Item href="#/action-1">Удалить</Dropdown.Item>
-                      <Dropdown.Item href="#/action-2">Переименовать</Dropdown.Item>
-                    </Dropdown.Menu>
-                  </Dropdown>
+                  {removable
+                    ? (
+                      <Dropdown as={ButtonGroup} className="d-flex">
+                        <Button
+                          className="w-100 rounded-0 text-start text-truncate"
+                          variant={id === currentChannelId ? 'secondary' : ''}
+                          onClick={handleChannel(id)}
+                        >
+                          <span className="me-1">#</span>
+                          {name}
+                        </Button>
+                        <Dropdown.Toggle
+                          split
+                          className="flex-grow-0"
+                          variant={id === currentChannelId ? 'secondary' : ''}
+                          id="dropdown-split-basic"
+                        />
+                        <Dropdown.Menu>
+                          <Dropdown.Item
+                            onClick={handleModal(types.removeChannel)}
+                          >
+                            Удалить
+                          </Dropdown.Item>
+                          <Dropdown.Item>
+                            Переименовать
+                          </Dropdown.Item>
+                        </Dropdown.Menu>
+                      </Dropdown>
+                    )
+                    : (
+                      <Button
+                        className="w-100 rounded-0 text-start"
+                        variant={id === currentChannelId ? 'secondary' : ''}
+                        onClick={handleChannel(id)}
+                      >
+                        <span className="me-1">#</span>
+                        {name}
+                      </Button>
+                    )}
                 </li>
               ))}
             </ul>
