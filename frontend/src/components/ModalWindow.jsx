@@ -8,7 +8,9 @@ import cn from 'classnames';
 import { useFormik } from 'formik';
 import { actions as modalActions } from '../slices/modalSlice.js';
 import { actions as dataActions } from '../slices/dataSlice.js';
-import { getData, getModal, getLastChannelId } from '../selectors.js';
+import {
+  getData, getModal, getLastChannelId, getChannelById,
+} from '../selectors.js';
 
 const getNewChannelId = (lastId) => lastId + 1;
 
@@ -138,17 +140,16 @@ const RemoveChannel = ({ handleRemove, handleClose }) => (
   </>
 );
 
-const RenameChannel = ({ handleClose, handleRename }) => {
+const RenameChannel = ({ handleClose, handleRename, id }) => {
+  const currentChannel = useSelector(getChannelById(id));
   const { channels } = useSelector(getData);
   const inputRef = useRef(null);
 
-  useEffect(() => {
-    inputRef.current.select();
-  }, []);
+  setTimeout(() => inputRef.current.select());
 
   const formik = useFormik({
     initialValues: {
-      name: '',
+      name: currentChannel.name,
     },
     validationSchema: Yup.object().shape({
       name: Yup.string().min(3, 'От 3 до 20 символов').max(20)
@@ -218,9 +219,9 @@ const RenameChannel = ({ handleClose, handleRename }) => {
   );
 };
 
-const ModalWindow = ({ currentId }) => {
+const ModalWindow = ({ handleChannel }) => {
   const dispatch = useDispatch();
-  const { isShow, type } = useSelector(getModal);
+  const { isShow, type, currentId } = useSelector(getModal);
 
   const handleClose = () => {
     dispatch(modalActions.modalControl(!isShow));
@@ -228,6 +229,7 @@ const ModalWindow = ({ currentId }) => {
 
   const handleRemove = () => {
     dispatch(dataActions.removeChannel(currentId));
+    handleChannel(1)();
     handleClose();
   };
 
@@ -246,6 +248,7 @@ const ModalWindow = ({ currentId }) => {
     renameChannel: <RenameChannel
       handleClose={handleClose}
       handleRename={handleRename}
+      id={currentId}
     />,
   };
 

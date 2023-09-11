@@ -18,7 +18,7 @@ const Chat = ({ channel }) => {
     initialValues: {
       body: '',
     },
-    onSubmit: ({ body }, { setSubmitting }) => {
+    onSubmit: ({ body }, { setSubmitting, resetForm }) => {
       const newMessage = {
         body,
         channelId: channel.id,
@@ -27,6 +27,7 @@ const Chat = ({ channel }) => {
 
       sendMessage(newMessage);
       setSubmitting(false);
+      resetForm();
     },
   });
 
@@ -55,7 +56,7 @@ const Chat = ({ channel }) => {
                 placeholder="Введите новое сообщение..."
                 className="border-0 p-0 ps-2 rounded-2"
                 onChange={formik.handleChange}
-                value={formik.values.text}
+                value={formik.values.body}
                 ref={inputRef}
               />
               <Button type="submit" variant="group-vertical">

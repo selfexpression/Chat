@@ -15,7 +15,6 @@ import { getData, getModal } from '../selectors.js';
 
 const ChannelsBox = () => {
   const [dataLoaded, setDataLoaded] = useState(false);
-  const [currentId, setCurrentId] = useState(null);
   const { isShow } = useSelector(getModal);
   const auth = useAuth();
   const dispatch = useDispatch();
@@ -43,13 +42,12 @@ const ChannelsBox = () => {
     dispatch(dataActions.setChannel(id));
   };
 
-  const handleModal = (type) => () => {
-    dispatch(modalActions.modalControl({ value: !isShow, type }));
+  const handleShow = (type, value) => () => {
+    dispatch(modalActions.modalControl({ value: !value, type }));
   };
 
-  const handleCurrentId = (id, type) => () => {
-    handleModal(type)();
-    setCurrentId(id);
+  const handleCurrentModal = (type, value, id) => () => {
+    dispatch(modalActions.modalControl({ value: !value, type, currentId: id }));
   };
 
   const types = {
@@ -60,7 +58,7 @@ const ChannelsBox = () => {
 
   return (
     <>
-      {isShow ? <ModalWindow currentId={currentId} /> : null}
+      {isShow ? <ModalWindow handleChannel={handleChannel} /> : null}
       <div className="container h-100 my-4 overflow-hidden rounded shadow">
         <div className="row h-100 bg-white flex-md-row">
           <div className="col-4 col-md-2 border-end px-0 bg-light flex-column h-100 d-flex">
@@ -70,7 +68,7 @@ const ChannelsBox = () => {
                 type="button"
                 variant="group-vertical"
                 className="p-0 text-primary"
-                onClick={handleModal(types.newChannel)}
+                onClick={handleShow(types.newChannel, isShow)}
               >
                 <PlusSquare size={20} />
                 <span className="visually-hidden">+</span>
@@ -97,10 +95,14 @@ const ChannelsBox = () => {
                           id="dropdown-split-basic"
                         />
                         <Dropdown.Menu>
-                          <Dropdown.Item onClick={handleCurrentId(id, types.removeChannel)}>
+                          <Dropdown.Item
+                            onClick={handleCurrentModal(types.removeChannel, isShow, id)}
+                          >
                             Удалить
                           </Dropdown.Item>
-                          <Dropdown.Item onClick={handleCurrentId(id, types.renameChannel)}>
+                          <Dropdown.Item
+                            onClick={handleCurrentModal(types.renameChannel, isShow, id)}
+                          >
                             Переименовать
                           </Dropdown.Item>
                         </Dropdown.Menu>
