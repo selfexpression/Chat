@@ -5,7 +5,6 @@ import { PlusSquare } from 'react-bootstrap-icons';
 import {
   Button, Dropdown, ButtonGroup,
 } from 'react-bootstrap';
-import { useNavigate } from 'react-router-dom';
 import { actions as dataActions } from '../slices/dataSlice.js';
 import { actions as modalActions } from '../slices/modalSlice.js';
 import routes from '../routes.js';
