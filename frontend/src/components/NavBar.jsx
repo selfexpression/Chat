@@ -17,7 +17,7 @@ const NavBar = () => {
   return (
     <Navbar bg="white" expand="lg" className="shadow-sm">
       <Container>
-        <Navbar.Brand href="/">
+        <Navbar.Brand href={!userId ? '/login' : '/'}>
           <img
             alt=""
             src="./favicon.ico"

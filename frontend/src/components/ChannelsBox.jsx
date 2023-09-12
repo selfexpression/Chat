@@ -5,6 +5,7 @@ import { PlusSquare } from 'react-bootstrap-icons';
 import {
   Button, Dropdown, ButtonGroup,
 } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom';
 import { actions as dataActions } from '../slices/dataSlice.js';
 import { actions as modalActions } from '../slices/modalSlice.js';
 import routes from '../routes.js';
@@ -31,9 +32,7 @@ const ChannelsBox = () => {
     getAxiosData();
   }, [auth, dispatch]);
 
-  if (!dataLoaded) {
-    return null;
-  }
+  if (!dataLoaded) return null;
 
   const { channels, currentChannelId } = data;
   const currentChannel = channels.find((channel) => channel.id === currentChannelId);

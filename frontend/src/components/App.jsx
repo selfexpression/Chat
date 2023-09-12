@@ -7,7 +7,7 @@ import NavBar from './NavBar.jsx';
 import SignUp from './SignUp.jsx';
 import { AuthContext } from '../contexts/index.js';
 
-const ContextProvider = ({ children }) => {
+const AuthContextProvider = ({ children }) => {
   const currentUser = localStorage.getItem('user');
   const [user, setUser] = useState(currentUser ?? null);
 
@@ -47,17 +47,19 @@ const ContextProvider = ({ children }) => {
 };
 
 const App = () => (
-  <ContextProvider>
+  <AuthContextProvider>
     <Router>
-      <NavBar />
-      <Routes>
-        <Route path="/" element={<ChannelsBox />} />
-        <Route path="/login" element={<LoginForm />} />
-        <Route path="/signup" element={<SignUp />} />
-        <Route path="*" element={<NotFound />} />
-      </Routes>
+      <div className="d-flex flex-column h-100">
+        <NavBar />
+        <Routes>
+          <Route path="/" element={<ChannelsBox />} />
+          <Route path="/login" element={<LoginForm />} />
+          <Route path="/signup" element={<SignUp />} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </div>
     </Router>
-  </ContextProvider>
+  </AuthContextProvider>
 );
 
 export default App;
