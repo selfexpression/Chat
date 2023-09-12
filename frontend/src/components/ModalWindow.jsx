@@ -17,10 +17,18 @@ import notify from '../utils/notify.js';
 
 const getNewChannelId = (lastId) => lastId + 1;
 
-const NewChannel = ({ value }) => {
-  const { t } = useTranslation();
+const schema = (t, channels) => Yup.object().shape({
+  name: Yup.string().min(3, t('validation.minLength')).max(20)
+    .test('is-unique', t('validation.unique'), (inputValue) => {
+      if (!inputValue) return true;
+
+      return !channels.some((channel) => channel.name === inputValue);
+    }),
+});
+
+const NewChannel = ({ values }) => {
+  const { isShow, channels, t } = values;
   const dispatch = useDispatch();
-  const { channels } = useSelector(getData);
   const { id: lastChannelId } = useSelector(getLastChannelId);
   const inputRef = useRef(null);
 
@@ -28,20 +36,13 @@ const NewChannel = ({ value }) => {
     setTimeout(() => {
       inputRef.current?.focus();
     });
-  }, [value]);
+  }, [isShow]);
 
   const formik = useFormik({
     initialValues: {
       name: '',
     },
-    validationSchema: Yup.object().shape({
-      name: Yup.string().min(3, t('validation.minLength')).max(20)
-        .test('is-unique', t('validation.unique'), (inputValue) => {
-          if (!inputValue) return true;
-
-          return !channels.some((channel) => channel.name === inputValue);
-        }),
-    }),
+    validationSchema: schema(t, channels),
     onSubmit: ({ name }, { setSubmitting }) => {
       const id = getNewChannelId(lastChannelId);
 
@@ -54,7 +55,7 @@ const NewChannel = ({ value }) => {
       dispatch(dataActions.setChannel(id));
       dispatch(dataActions.addChannel(newChannel));
       setSubmitting(false);
-      handleClose(value)();
+      handleClose(isShow)();
       notify('success', t, 'toast.createChannel');
     },
   });
@@ -66,7 +67,7 @@ const NewChannel = ({ value }) => {
         <Button
           variant="close"
           type="button"
-          onClick={handleClose(value)}
+          onClick={handleClose(isShow)}
           aria-label="Close"
           data-bs-dismiss="modal"
         />
@@ -92,7 +93,7 @@ const NewChannel = ({ value }) => {
               <Button
                 variant="secondary"
                 className="me-2"
-                onClick={handleClose(value)}
+                onClick={handleClose(isShow)}
               >
                 {t('newChannel.cancelButton')}
               </Button>
@@ -112,8 +113,8 @@ const NewChannel = ({ value }) => {
   );
 };
 
-const RemoveChannel = ({ id, value }) => {
-  const { t } = useTranslation();
+const RemoveChannel = ({ values }) => {
+  const { id, isShow, t } = values;
 
   return (
     <>
@@ -124,7 +125,7 @@ const RemoveChannel = ({ id, value }) => {
           type="button"
           aria-label="Close"
           data-bs-dismiss="modal"
-          onClick={handleClose(value)}
+          onClick={handleClose(isShow)}
         />
       </Modal.Header>
       <Modal.Body>
@@ -133,7 +134,7 @@ const RemoveChannel = ({ id, value }) => {
           <Button
             variant="secondary"
             className="me-2"
-            onClick={handleClose(value)}
+            onClick={handleClose(isShow)}
           >
             {t('removeChannel.cancelButton')}
           </Button>
@@ -141,7 +142,7 @@ const RemoveChannel = ({ id, value }) => {
             variant="danger"
             className="me-2"
             onClick={() => {
-              handleRemove(id, value)();
+              handleRemove(id, isShow)();
               notify('success', t, 'toast.removeChannel');
             }}
           >
@@ -153,10 +154,11 @@ const RemoveChannel = ({ id, value }) => {
   );
 };
 
-const RenameChannel = ({ id, value }) => {
-  const { t } = useTranslation();
+const RenameChannel = ({ values }) => {
+  const {
+    id, isShow, channels, t,
+  } = values;
   const currentChannel = useSelector(getChannelById(id));
-  const { channels } = useSelector(getData);
   const inputRef = useRef(null);
 
   useEffect(() => {
@@ -169,18 +171,11 @@ const RenameChannel = ({ id, value }) => {
     initialValues: {
       name: currentChannel.name,
     },
-    validationSchema: Yup.object().shape({
-      name: Yup.string().min(3, t('validation.minLength')).max(20)
-        .test('is-unique', t('validation.unique'), (inputValue) => {
-          if (!inputValue) return true;
-
-          return !channels.some((channel) => channel.name === inputValue);
-        }),
-    }),
+    validationSchema: schema(t, channels),
     onSubmit: ({ name }, { setSubmitting }) => {
       handleRename(name, id)();
       setSubmitting(false);
-      handleClose(value)();
+      handleClose(isShow)();
       notify('success', t, 'toast.renameChannel');
     },
   });
@@ -192,7 +187,7 @@ const RenameChannel = ({ id, value }) => {
         <Button
           variant="close"
           type="button"
-          onClick={handleClose(value)}
+          onClick={handleClose(isShow)}
           aria-label="Close"
           data-bs-dismiss="modal"
         />
@@ -218,7 +213,7 @@ const RenameChannel = ({ id, value }) => {
               <Button
                 variant="secondary"
                 className="me-2"
-                onClick={handleClose(value)}
+                onClick={handleClose(isShow)}
               >
                 {t('renameChannel.cancelButton')}
               </Button>
@@ -239,12 +234,23 @@ const RenameChannel = ({ id, value }) => {
 };
 
 const ModalWindow = () => {
+  const { t } = useTranslation();
   const { isShow, type, currentId } = useSelector(getModal);
+  const { channels } = useSelector(getData);
 
   const mappingModals = {
-    newChannel: <NewChannel value={isShow} />,
-    removeChannel: <RemoveChannel id={currentId} value={isShow} />,
-    renameChannel: <RenameChannel id={currentId} value={isShow} />,
+    newChannel: <NewChannel values={{
+      isShow, channels, t,
+    }}
+    />,
+    removeChannel: <RemoveChannel values={{
+      id: currentId, isShow, t,
+    }}
+    />,
+    renameChannel: <RenameChannel values={{
+      id: currentId, isShow, channels, t,
+    }}
+    />,
   };
 
   const ModalComponent = mappingModals[type];

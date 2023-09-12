@@ -11,6 +11,22 @@ import { useAuth } from '../hooks/index.js';
 import image from '../assets/login.jpeg';
 import notify from '../utils/notify.js';
 
+const axiosError = (error, setErrors, t) => {
+  switch (error.code) {
+    case 'ERR_BAD_REQUEST':
+      setErrors({ auth: t('validation.wrongData') });
+      break;
+    case 'ERR_NETWORK': {
+      notify('error', t, 'toast.networkError');
+      break;
+    }
+    default: {
+      notify('error', t, 'toast.requestError');
+      break;
+    }
+  }
+};
+
 const schema = Yup.object().shape({
   username: Yup.string().required(),
   password: Yup.string().required(),
@@ -35,21 +51,7 @@ const Login = () => {
     onSubmit: async (values, { setSubmitting, setErrors }) => {
       const response = await axios.post(routes.loginPath(), values)
         .catch((error) => {
-          switch (error.code) {
-            case 'ERR_BAD_REQUEST':
-              setErrors({ auth: t('validation.wrongData') });
-              break;
-            case 'ERR_NETWORK': {
-              notify('error', t, 'toast.networkError');
-              break;
-            }
-            default: {
-              notify('error', t, 'toast.requestError');
-              break;
-            }
-          }
-
-          return error;
+          axiosError(error, setErrors, t);
         });
 
       auth.login(response.data);
@@ -93,7 +95,7 @@ const Login = () => {
                       onChange={formik.handleChange}
                       ref={inputRef}
                     />
-                    {field === 'confirm' && formik.errors.auth
+                    {formik.errors.auth && field === 'password'
                       ? (<div className="invalid-tooltip">{formik.errors.auth}</div>)
                       : ''}
                     <label htmlFor={field} className="form-label">{t(`login.${field}Label`)}</label>

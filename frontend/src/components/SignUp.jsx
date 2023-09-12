@@ -8,6 +8,7 @@ import { useNavigate } from 'react-router-dom';
 import routes from '../utils/routes.js';
 import { useAuth } from '../hooks/index.js';
 import image from '../assets/signup.jpg';
+import notify from '../utils/notify.js';
 
 const schema = (t) => Yup.object().shape({
   username: Yup
@@ -24,6 +25,22 @@ const schema = (t) => Yup.object().shape({
     .required(t('validation.required'))
     .oneOf([Yup.ref('password')], t('validation.confirmPasswordMatch')),
 });
+
+const axiosError = (error, setErrors, t) => {
+  switch (error.code) {
+    case 'ERR_BAD_REQUEST':
+      setErrors({ userExists: t('validation.userExists') });
+      break;
+    case 'ERR_NETWORK': {
+      notify('error', t, 'toast.networkError');
+      break;
+    }
+    default: {
+      notify('error', t, 'toast.requestError');
+      break;
+    }
+  }
+};
 
 const SignUp = () => {
   const { t } = useTranslation();
@@ -43,19 +60,14 @@ const SignUp = () => {
     },
     validationSchema: schema(t),
     onSubmit: async (values, { setSubmitting, setErrors }) => {
-      try {
-        const response = await axios.post(routes.signupPath(), values);
-        auth.login(response.data);
-        navigate('/');
-        setSubmitting(false);
-      } catch (error) {
-        if (error.response.status === 409) {
-          setErrors({ userExists: t('validation.userExists') });
-          return;
-        }
+      const response = await axios.post(routes.signupPath(), values)
+        .catch((error) => {
+          axiosError(error, setErrors, t);
+        });
 
-        throw error;
-      }
+      auth.login(response.data);
+      navigate('/');
+      setSubmitting(false);
     },
   });
 
