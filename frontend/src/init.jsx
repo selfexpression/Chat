@@ -3,7 +3,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { I18nextProvider, initReactI18next } from 'react-i18next';
 import i18next from 'i18next';
-import LanguageDetector from 'i18next-browser-languagedetector';
+// import LanguageDetector from 'i18next-browser-languagedetector';
 import { Provider } from 'react-redux';
 import App from './components/App.jsx';
 import store from './slices/index.js';
@@ -26,7 +26,7 @@ const runApp = async () => {
 
   await i18n
     .use(initReactI18next)
-    .use(LanguageDetector)
+    // .use(LanguageDetector)
     .init({
       resources,
       fallbackLng: 'ru',

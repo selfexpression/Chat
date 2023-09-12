@@ -7,15 +7,15 @@ import * as Yup from 'yup';
 import cn from 'classnames';
 import { useFormik } from 'formik';
 import { useTranslation } from 'react-i18next';
-import { actions as modalActions } from '../slices/modalSlice.js';
 import { actions as dataActions } from '../slices/dataSlice.js';
 import {
   getData, getModal, getLastChannelId, getChannelById,
-} from '../selectors.js';
+} from '../utils/selectors.js';
+import { handleClose, handleRemove, handleRename } from '../controllers/index.js';
 
 const getNewChannelId = (lastId) => lastId + 1;
 
-const NewChannel = ({ handleClose }) => {
+const NewChannel = ({ value }) => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const { channels } = useSelector(getData);
@@ -23,8 +23,10 @@ const NewChannel = ({ handleClose }) => {
   const inputRef = useRef(null);
 
   useEffect(() => {
-    inputRef.current.focus();
-  }, []);
+    setTimeout(() => {
+      inputRef.current?.focus();
+    });
+  }, [value]);
 
   const formik = useFormik({
     initialValues: {
@@ -32,10 +34,10 @@ const NewChannel = ({ handleClose }) => {
     },
     validationSchema: Yup.object().shape({
       name: Yup.string().min(3, t('validation.minLength')).max(20)
-        .test('is-unique', t('validation.unique'), (value) => {
-          if (!value) return true;
+        .test('is-unique', t('validation.unique'), (inputValue) => {
+          if (!inputValue) return true;
 
-          return !channels.some((channel) => channel.name === value);
+          return !channels.some((channel) => channel.name === inputValue);
         }),
     }),
     onSubmit: ({ name }, { setSubmitting }) => {
@@ -50,7 +52,7 @@ const NewChannel = ({ handleClose }) => {
       dispatch(dataActions.setChannel(id));
       dispatch(dataActions.addChannel(newChannel));
       setSubmitting(false);
-      handleClose();
+      handleClose(value)();
     },
   });
 
@@ -61,7 +63,7 @@ const NewChannel = ({ handleClose }) => {
         <Button
           variant="close"
           type="button"
-          onClick={handleClose}
+          onClick={handleClose(value)}
           aria-label="Close"
           data-bs-dismiss="modal"
         />
@@ -87,7 +89,7 @@ const NewChannel = ({ handleClose }) => {
               <Button
                 variant="secondary"
                 className="me-2"
-                onClick={handleClose}
+                onClick={handleClose(value)}
               >
                 {t('newChannel.cancelButton')}
               </Button>
@@ -107,7 +109,7 @@ const NewChannel = ({ handleClose }) => {
   );
 };
 
-const RemoveChannel = ({ handleRemove, handleClose }) => {
+const RemoveChannel = ({ id, value }) => {
   const { t } = useTranslation();
 
   return (
@@ -119,7 +121,7 @@ const RemoveChannel = ({ handleRemove, handleClose }) => {
           type="button"
           aria-label="Close"
           data-bs-dismiss="modal"
-          onClick={handleClose}
+          onClick={handleClose(value)}
         />
       </Modal.Header>
       <Modal.Body>
@@ -128,15 +130,14 @@ const RemoveChannel = ({ handleRemove, handleClose }) => {
           <Button
             variant="secondary"
             className="me-2"
-            onClick={handleClose}
+            onClick={handleClose(value)}
           >
             {t('removeChannel.cancelButton')}
           </Button>
           <Button
             variant="danger"
-            type="submit"
             className="me-2"
-            onClick={handleRemove}
+            onClick={handleRemove(id)}
           >
             {t('removeChannel.deleteButton')}
           </Button>
@@ -146,30 +147,34 @@ const RemoveChannel = ({ handleRemove, handleClose }) => {
   );
 };
 
-const RenameChannel = ({ handleClose, handleRename, id }) => {
+const RenameChannel = ({ id, value }) => {
   const { t } = useTranslation();
   const currentChannel = useSelector(getChannelById(id));
   const { channels } = useSelector(getData);
   const inputRef = useRef(null);
 
-  setTimeout(() => inputRef.current.select());
+  useEffect(() => {
+    setTimeout(() => {
+      inputRef.current?.select();
+    });
+  }, []);
 
   const formik = useFormik({
     initialValues: {
       name: currentChannel.name,
     },
     validationSchema: Yup.object().shape({
-      name: Yup.string().min(3, 'От 3 до 20 символов').max(20)
-        .test('is-unique', 'Должно быть уникальным', (value) => {
-          if (!value) return true;
+      name: Yup.string().min(3, t('validation.minLength')).max(20)
+        .test('is-unique', t('validation.unique'), (inputValue) => {
+          if (!inputValue) return true;
 
-          return !channels.some((channel) => channel.name === value);
+          return !channels.some((channel) => channel.name === inputValue);
         }),
     }),
     onSubmit: ({ name }, { setSubmitting }) => {
-      handleRename(name);
+      handleRename(name, id)();
       setSubmitting(false);
-      handleClose();
+      handleClose(value)();
     },
   });
 
@@ -180,7 +185,7 @@ const RenameChannel = ({ handleClose, handleRename, id }) => {
         <Button
           variant="close"
           type="button"
-          onClick={handleClose}
+          onClick={handleClose(value)}
           aria-label="Close"
           data-bs-dismiss="modal"
         />
@@ -206,7 +211,7 @@ const RenameChannel = ({ handleClose, handleRename, id }) => {
               <Button
                 variant="secondary"
                 className="me-2"
-                onClick={handleClose}
+                onClick={handleClose(value)}
               >
                 {t('renameChannel.cancelButton')}
               </Button>
@@ -226,37 +231,13 @@ const RenameChannel = ({ handleClose, handleRename, id }) => {
   );
 };
 
-const ModalWindow = ({ handleChannel }) => {
-  const dispatch = useDispatch();
+const ModalWindow = () => {
   const { isShow, type, currentId } = useSelector(getModal);
 
-  const handleClose = () => {
-    dispatch(modalActions.modalControl(!isShow));
-  };
-
-  const handleRemove = () => {
-    dispatch(dataActions.removeChannel(currentId));
-    handleChannel(1)();
-    handleClose();
-  };
-
-  const handleRename = (name) => {
-    dispatch(dataActions.renameChannel({ currentId, name }));
-  };
-
   const mappingModals = {
-    newChannel: <NewChannel
-      handleClose={handleClose}
-    />,
-    removeChannel: <RemoveChannel
-      handleRemove={handleRemove}
-      handleClose={handleClose}
-    />,
-    renameChannel: <RenameChannel
-      handleClose={handleClose}
-      handleRename={handleRename}
-      id={currentId}
-    />,
+    newChannel: <NewChannel value={isShow} />,
+    removeChannel: <RemoveChannel id={currentId} value={isShow} />,
+    renameChannel: <RenameChannel id={currentId} value={isShow} />,
   };
 
   const ModalComponent = mappingModals[type];

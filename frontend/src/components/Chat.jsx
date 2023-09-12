@@ -1,12 +1,43 @@
 import React, { useRef } from 'react';
+import { useSelector } from 'react-redux';
 import { useFormik } from 'formik';
 import { ArrowRightSquare } from 'react-bootstrap-icons';
 import { Button, Form, InputGroup } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
 import { useAuth, useApi } from '../hooks/index.js';
-import MessagesBox from './MessagesBox.jsx';
+import { messagesSelectors } from '../slices/messagesSlice.js';
 
-const Chat = ({ channel }) => {
+const MessagesBox = ({ currentChannelMessages }) => (
+  <div id="messages-box" className="chat-messages overflow-auto px-5 ">
+    {currentChannelMessages.map(({ body, id, username }) => (
+      <div key={id} className="text-break mb-2">
+        <b>{username}</b>
+        {': '}
+        {body}
+      </div>
+    ))}
+  </div>
+);
+
+const ChannelInfo = ({ currentChannelMessages, current }) => {
+  const { t } = useTranslation();
+  const messageCount = currentChannelMessages.length;
+
+  return (
+    <div className="bg-light mb-4 p-3 shadow-sm small">
+      <p className="m-0">
+        #
+        {' '}
+        <b>{current.name}</b>
+      </p>
+      <span className="text-muted">
+        {t('channels.messageCount', { count: messageCount })}
+      </span>
+    </div>
+  );
+};
+
+const Chat = ({ current }) => {
   const { t } = useTranslation();
   const { user } = useAuth();
   const { sendMessage } = useApi();
@@ -21,7 +52,7 @@ const Chat = ({ channel }) => {
     onSubmit: ({ body }, { setSubmitting, resetForm }) => {
       const newMessage = {
         body,
-        channelId: channel.id,
+        channelId: current.id,
         username: user,
       };
 
@@ -31,16 +62,14 @@ const Chat = ({ channel }) => {
     },
   });
 
+  const messages = useSelector(messagesSelectors.selectAll);
+  const currentChannelMessages = messages.filter((message) => message.channelId === current.id);
+
   return (
     <div className="col p-0 h-100">
       <div className="d-flex flex-column h-100">
-        <div className="bg-light mb-4 p-3 shadow-sm small">
-          <p className="m-0">
-            <b />
-          </p>
-          <span className="text-muted" />
-        </div>
-        <MessagesBox />
+        <ChannelInfo currentChannelMessages={currentChannelMessages} current={current} />
+        <MessagesBox messages={messages} currentChannelMessages={currentChannelMessages} />
         <div className="mt-auto px-5 py-3">
           <Form
             noValidate

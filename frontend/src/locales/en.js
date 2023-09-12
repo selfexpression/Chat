@@ -6,9 +6,11 @@ export default {
     },
     channels: {
       title: 'Channels',
-      // addChannel: 'Add Channel',
       removeChannel: 'Remove',
       renameChannel: 'Rename',
+      messageCount_0: '{{count}} messages',
+      messageCount_one: '{{count}} message',
+      messageCount_other: '{{count}} messages',
     },
     chat: {
       newMessagePlaceholder: 'Enter a new message...',
@@ -29,12 +31,10 @@ export default {
       usernameMinLength: 'Between 3 and 20 characters',
       passwordMinLength: 'At least 6 characters',
       confirmPasswordMatch: 'Passwords must match',
-      // usernameUnique: 'Must be unique',
       userExists: 'User already exists',
     },
     newChannel: {
       modalTitle: 'Add Channel',
-      // nameLabel: 'Channel Name',
       cancelButton: 'Cancel',
       submitButton: 'Submit',
     },
@@ -46,7 +46,6 @@ export default {
     },
     renameChannel: {
       modalTitle: 'Rename Channel',
-      // nameLabel: 'Channel Name',
       cancelButton: 'Cancel',
       submitButton: 'Submit',
     },
@@ -61,6 +60,11 @@ export default {
       passwordLabel: 'Password',
       confirmPasswordLabel: 'Confirm Password',
       signUpButton: 'Sign Up',
+    },
+    notFound: {
+      title: 'Page not found',
+      message: 'But you can go to the ',
+      link: 'main page',
     },
   },
 };

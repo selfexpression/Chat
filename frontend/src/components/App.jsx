@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import LoginForm from './Login.jsx';
 import NotFound from './NotFound.jsx';
-import ChannelsBox from './ChannelsBox.jsx';
+import Channels from './Channels.jsx';
 import NavBar from './NavBar.jsx';
 import SignUp from './SignUp.jsx';
 import { AuthContext } from '../contexts/index.js';
@@ -52,7 +52,7 @@ const App = () => (
       <div className="d-flex flex-column h-100">
         <NavBar />
         <Routes>
-          <Route path="/" element={<ChannelsBox />} />
+          <Route path="/" element={<Channels />} />
           <Route path="/login" element={<LoginForm />} />
           <Route path="/signup" element={<SignUp />} />
           <Route path="*" element={<NotFound />} />

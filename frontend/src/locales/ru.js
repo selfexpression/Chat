@@ -6,9 +6,13 @@ export default {
     },
     channels: {
       title: 'Каналы',
-      // addChannel: 'Добавить канал',
       removeChannel: 'Удалить',
       renameChannel: 'Переименовать',
+      messageCount_0: '{{count}} сообщений',
+      messageCount_one: '{{count}} сообщение',
+      messageCount_few: '{{count}} сообщения',
+      messageCount_many: '{{count}} сообщений',
+      messageCount_other: '{{count}} сообщений',
     },
     chat: {
       newMessagePlaceholder: 'Введите новое сообщение...',
@@ -25,15 +29,14 @@ export default {
     validation: {
       unique: 'Должно быть уникальным',
       required: 'Обязательное поле',
+      minLength: 'От 3 до 20 символов',
       usernameMinLength: 'От 3 до 20 символов',
       passwordMinLength: 'Не менее 6 символов',
       confirmPasswordMatch: 'Пароли должны совпадать',
-      // usernameUnique: 'Должно быть уникальным',
       userExists: 'Такой пользователь уже существует',
     },
     newChannel: {
       modalTitle: 'Добавить канал',
-      // nameLabel: 'Название канала',
       cancelButton: 'Отменить',
       submitButton: 'Отправить',
     },
@@ -45,7 +48,6 @@ export default {
     },
     renameChannel: {
       modalTitle: 'Переименовать канал',
-      // nameLabel: 'Название канала',
       cancelButton: 'Отменить',
       submitButton: 'Отправить',
     },
@@ -60,6 +62,11 @@ export default {
       passwordLabel: 'Пароль',
       confirmPasswordLabel: 'Подтвердите пароль',
       signUpButton: 'Зарегистрироваться',
+    },
+    notFound: {
+      title: 'Страница не найдена',
+      message: 'Но вы можете перейти на ',
+      link: 'главную страницу',
     },
   },
 };
