@@ -2,10 +2,12 @@ import React, { useRef } from 'react';
 import { useFormik } from 'formik';
 import { ArrowRightSquare } from 'react-bootstrap-icons';
 import { Button, Form, InputGroup } from 'react-bootstrap';
+import { useTranslation } from 'react-i18next';
 import { useAuth, useApi } from '../hooks/index.js';
 import MessagesBox from './MessagesBox.jsx';
 
 const Chat = ({ channel }) => {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const { sendMessage } = useApi();
   const inputRef = useRef(null);
@@ -51,7 +53,7 @@ const Chat = ({ channel }) => {
                 id="body"
                 type="text"
                 aria-label="Новое сообщение"
-                placeholder="Введите новое сообщение..."
+                placeholder={t('chat.newMessagePlaceholder')}
                 className="border-0 p-0 ps-2 rounded-2"
                 onChange={formik.handleChange}
                 value={formik.values.body}
@@ -59,7 +61,7 @@ const Chat = ({ channel }) => {
               />
               <Button type="submit" variant="group-vertical">
                 <ArrowRightSquare size={20} />
-                <span className="visually-hidden">Отправить</span>
+                <span className="visually-hidden">{t('chat.sendButton')}</span>
               </Button>
             </InputGroup>
           </Form>

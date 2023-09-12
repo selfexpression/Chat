@@ -3,6 +3,7 @@ import { useFormik } from 'formik';
 import { Button, Form } from 'react-bootstrap';
 import * as Yup from 'yup';
 import axios from 'axios';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import routes from '../routes.js';
 import { useAuth } from '../hooks/index.js';
@@ -14,6 +15,7 @@ const schema = Yup.object().shape({
 });
 
 const Login = () => {
+  const { t } = useTranslation();
   const auth = useAuth();
   const navigate = useNavigate();
   const inputRef = useRef(null);
@@ -57,18 +59,18 @@ const Login = () => {
                 <img src={image} className="rounded-circle" alt="login" />
               </div>
               <Form className="col-12 col-md-6 mt-3 mt-md-0" onSubmit={formik.handleSubmit}>
-                <h1 className="text-center mb-4">Войти</h1>
+                <h1 className="text-center mb-4">{t('login.title')}</h1>
                 <Form.Group className="form-floating mb-3">
                   <Form.Control
                     type="text"
                     name="username"
                     id="username"
                     className={`form-control ${formik.errors.auth ? 'is-invalid' : ''}`}
-                    placeholder="Ваш ник"
+                    placeholder={t('login.usernameLabel')}
                     onChange={formik.handleChange}
                     ref={inputRef}
                   />
-                  <label htmlFor="username" className="form-label">Ваш ник</label>
+                  <label htmlFor="username" className="form-label">{t('login.usernameLabel')}</label>
                 </Form.Group>
                 <Form.Group className="form-floating mb-4">
                   <Form.Control
@@ -76,11 +78,11 @@ const Login = () => {
                     name="password"
                     id="password"
                     className={`form-control ${formik.errors.auth ? 'is-invalid' : ''}`}
-                    placeholder="Пароль"
+                    placeholder={t('login.passwordLabel')}
                     onChange={formik.handleChange}
                   />
                   {formik.errors.auth ? (<div className="invalid-tooltip">{formik.errors.auth}</div>) : null}
-                  <label htmlFor="password" className="form-label">Пароль</label>
+                  <label htmlFor="password" className="form-label">{t('login.passwordLabel')}</label>
                 </Form.Group>
                 <Button
                   type="submit"
@@ -88,14 +90,15 @@ const Login = () => {
                   className="w-100 mb-3"
                   disabled={!formik.isValid || formik.isSubmitting}
                 >
-                  Войти
+                  {t('login.loginButton')}
                 </Button>
               </Form>
             </div>
             <div className="card-footer p-4">
               <div className="text-center">
-                <span>Нет аккаунта?&nbsp;</span>
-                <a href="/signup">Регистрация</a>
+                <span>{t('login.noAccount')}</span>
+                {' '}
+                <a href="/signup">{t('login.signUpLink')}</a>
               </div>
             </div>
           </div>

@@ -6,6 +6,7 @@ import {
 import * as Yup from 'yup';
 import cn from 'classnames';
 import { useFormik } from 'formik';
+import { useTranslation } from 'react-i18next';
 import { actions as modalActions } from '../slices/modalSlice.js';
 import { actions as dataActions } from '../slices/dataSlice.js';
 import {
@@ -15,6 +16,7 @@ import {
 const getNewChannelId = (lastId) => lastId + 1;
 
 const NewChannel = ({ handleClose }) => {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const { channels } = useSelector(getData);
   const { id: lastChannelId } = useSelector(getLastChannelId);
@@ -29,8 +31,8 @@ const NewChannel = ({ handleClose }) => {
       name: '',
     },
     validationSchema: Yup.object().shape({
-      name: Yup.string().min(3, 'От 3 до 20 символов').max(20)
-        .test('is-unique', 'Должно быть уникальным', (value) => {
+      name: Yup.string().min(3, t('validation.minLength')).max(20)
+        .test('is-unique', t('validation.unique'), (value) => {
           if (!value) return true;
 
           return !channels.some((channel) => channel.name === value);
@@ -55,7 +57,7 @@ const NewChannel = ({ handleClose }) => {
   return (
     <>
       <Modal.Header>
-        <Modal.Title>Добавить канал</Modal.Title>
+        <Modal.Title>{t('newChannel.modalTitle')}</Modal.Title>
         <Button
           variant="close"
           type="button"
@@ -87,7 +89,7 @@ const NewChannel = ({ handleClose }) => {
                 className="me-2"
                 onClick={handleClose}
               >
-                Отменить
+                {t('newChannel.cancelButton')}
               </Button>
               <Button
                 variant="primary"
@@ -95,7 +97,7 @@ const NewChannel = ({ handleClose }) => {
                 className="me-2"
                 disabled={formik.isSubmitting}
               >
-                Отправить
+                {t('newChannel.submitButton')}
               </Button>
             </div>
           </div>
@@ -105,42 +107,47 @@ const NewChannel = ({ handleClose }) => {
   );
 };
 
-const RemoveChannel = ({ handleRemove, handleClose }) => (
-  <>
-    <Modal.Header>
-      <Modal.Title>Удалить канал</Modal.Title>
-      <Button
-        variant="close"
-        type="button"
-        aria-label="Close"
-        data-bs-dismiss="modal"
-        onClick={handleClose}
-      />
-    </Modal.Header>
-    <Modal.Body>
-      <p className="lead">Вы уверены?</p>
-      <div className="d-flex justify-content-end">
+const RemoveChannel = ({ handleRemove, handleClose }) => {
+  const { t } = useTranslation();
+
+  return (
+    <>
+      <Modal.Header>
+        <Modal.Title>{t('removeChannel.modalTitle')}</Modal.Title>
         <Button
-          variant="secondary"
-          className="me-2"
+          variant="close"
+          type="button"
+          aria-label="Close"
+          data-bs-dismiss="modal"
           onClick={handleClose}
-        >
-          Отменить
-        </Button>
-        <Button
-          variant="danger"
-          type="submit"
-          className="me-2"
-          onClick={handleRemove}
-        >
-          Удалить
-        </Button>
-      </div>
-    </Modal.Body>
-  </>
-);
+        />
+      </Modal.Header>
+      <Modal.Body>
+        <p className="lead">{t('removeChannel.confirmationText')}</p>
+        <div className="d-flex justify-content-end">
+          <Button
+            variant="secondary"
+            className="me-2"
+            onClick={handleClose}
+          >
+            {t('removeChannel.cancelButton')}
+          </Button>
+          <Button
+            variant="danger"
+            type="submit"
+            className="me-2"
+            onClick={handleRemove}
+          >
+            {t('removeChannel.deleteButton')}
+          </Button>
+        </div>
+      </Modal.Body>
+    </>
+  );
+};
 
 const RenameChannel = ({ handleClose, handleRename, id }) => {
+  const { t } = useTranslation();
   const currentChannel = useSelector(getChannelById(id));
   const { channels } = useSelector(getData);
   const inputRef = useRef(null);
@@ -169,7 +176,7 @@ const RenameChannel = ({ handleClose, handleRename, id }) => {
   return (
     <>
       <Modal.Header>
-        <Modal.Title>Переименовать канал</Modal.Title>
+        <Modal.Title>{t('renameChannel.modalTitle')}</Modal.Title>
         <Button
           variant="close"
           type="button"
@@ -201,7 +208,7 @@ const RenameChannel = ({ handleClose, handleRename, id }) => {
                 className="me-2"
                 onClick={handleClose}
               >
-                Отменить
+                {t('renameChannel.cancelButton')}
               </Button>
               <Button
                 variant="primary"
@@ -209,7 +216,7 @@ const RenameChannel = ({ handleClose, handleRename, id }) => {
                 className="me-2"
                 disabled={formik.isSubmitting}
               >
-                Отправить
+                {t('renameChannel.submitButton')}
               </Button>
             </div>
           </div>

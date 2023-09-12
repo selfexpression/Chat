@@ -1,8 +1,12 @@
 export default {
-  en: {
+  translation: {
+    lang: {
+      currentLang: 'EN',
+      changeLang: 'Russian',
+    },
     channels: {
       title: 'Channels',
-      addChannel: 'Add Channel',
+      // addChannel: 'Add Channel',
       removeChannel: 'Remove',
       renameChannel: 'Rename',
     },
@@ -25,12 +29,12 @@ export default {
       usernameMinLength: 'Between 3 and 20 characters',
       passwordMinLength: 'At least 6 characters',
       confirmPasswordMatch: 'Passwords must match',
-      usernameUnique: 'Must be unique',
+      // usernameUnique: 'Must be unique',
       userExists: 'User already exists',
     },
     newChannel: {
       modalTitle: 'Add Channel',
-      nameLabel: 'Channel Name',
+      // nameLabel: 'Channel Name',
       cancelButton: 'Cancel',
       submitButton: 'Submit',
     },
@@ -42,7 +46,7 @@ export default {
     },
     renameChannel: {
       modalTitle: 'Rename Channel',
-      nameLabel: 'Channel Name',
+      // nameLabel: 'Channel Name',
       cancelButton: 'Cancel',
       submitButton: 'Submit',
     },
@@ -57,7 +61,6 @@ export default {
       passwordLabel: 'Password',
       confirmPasswordLabel: 'Confirm Password',
       signUpButton: 'Sign Up',
-      cancelButton: 'Cancel',
     },
   },
 };

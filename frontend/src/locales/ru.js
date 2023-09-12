@@ -1,8 +1,12 @@
 export default {
-  ru: {
+  translation: {
+    lang: {
+      currentLang: 'RU',
+      changeLang: 'Английский',
+    },
     channels: {
       title: 'Каналы',
-      addChannel: 'Добавить канал',
+      // addChannel: 'Добавить канал',
       removeChannel: 'Удалить',
       renameChannel: 'Переименовать',
     },
@@ -19,18 +23,17 @@ export default {
       signUpLink: 'Зарегистрироваться',
     },
     validation: {
-      minLength: 'От 3 до 20 символов',
       unique: 'Должно быть уникальным',
       required: 'Обязательное поле',
       usernameMinLength: 'От 3 до 20 символов',
       passwordMinLength: 'Не менее 6 символов',
       confirmPasswordMatch: 'Пароли должны совпадать',
-      usernameUnique: 'Должно быть уникальным',
+      // usernameUnique: 'Должно быть уникальным',
       userExists: 'Такой пользователь уже существует',
     },
     newChannel: {
       modalTitle: 'Добавить канал',
-      nameLabel: 'Название канала',
+      // nameLabel: 'Название канала',
       cancelButton: 'Отменить',
       submitButton: 'Отправить',
     },
@@ -42,7 +45,7 @@ export default {
     },
     renameChannel: {
       modalTitle: 'Переименовать канал',
-      nameLabel: 'Название канала',
+      // nameLabel: 'Название канала',
       cancelButton: 'Отменить',
       submitButton: 'Отправить',
     },
@@ -57,7 +60,6 @@ export default {
       passwordLabel: 'Пароль',
       confirmPasswordLabel: 'Подтвердите пароль',
       signUpButton: 'Зарегистрироваться',
-      cancelButton: 'Отменить',
     },
   },
 };

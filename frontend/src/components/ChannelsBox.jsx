@@ -5,6 +5,7 @@ import { PlusSquare } from 'react-bootstrap-icons';
 import {
   Button, Dropdown, ButtonGroup,
 } from 'react-bootstrap';
+import { useTranslation } from 'react-i18next';
 import { actions as dataActions } from '../slices/dataSlice.js';
 import { actions as modalActions } from '../slices/modalSlice.js';
 import routes from '../routes.js';
@@ -14,6 +15,7 @@ import ModalWindow from './ModalWindow.jsx';
 import { getData, getModal } from '../selectors.js';
 
 const ChannelsBox = () => {
+  const { t } = useTranslation();
   const [dataLoaded, setDataLoaded] = useState(false);
   const { isShow } = useSelector(getModal);
   const auth = useAuth();
@@ -61,7 +63,7 @@ const ChannelsBox = () => {
         <div className="row h-100 bg-white flex-md-row">
           <div className="col-4 col-md-2 border-end px-0 bg-light flex-column h-100 d-flex">
             <div className="d-flex mt-1 justify-content-between mb-2 ps-4 pe-2 p-4">
-              <b>Каналы</b>
+              <b>{t('channels.title')}</b>
               <Button
                 type="button"
                 variant="group-vertical"
@@ -96,12 +98,12 @@ const ChannelsBox = () => {
                           <Dropdown.Item
                             onClick={handleCurrentModal(types.removeChannel, isShow, id)}
                           >
-                            Удалить
+                            {t('channels.removeChannel')}
                           </Dropdown.Item>
                           <Dropdown.Item
                             onClick={handleCurrentModal(types.renameChannel, isShow, id)}
                           >
-                            Переименовать
+                            {t('channels.renameChannel')}
                           </Dropdown.Item>
                         </Dropdown.Menu>
                       </Dropdown>
