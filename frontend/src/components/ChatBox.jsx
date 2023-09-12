@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useRef } from 'react';
 import { useFormik } from 'formik';
 import { ArrowRightSquare } from 'react-bootstrap-icons';
 import { Button, Form, InputGroup } from 'react-bootstrap';
@@ -10,9 +10,7 @@ const Chat = ({ channel }) => {
   const { sendMessage } = useApi();
   const inputRef = useRef(null);
 
-  useEffect(() => {
-    inputRef.current.focus();
-  }, []);
+  setTimeout(() => inputRef.current.focus());
 
   const formik = useFormik({
     initialValues: {

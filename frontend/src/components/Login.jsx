@@ -31,8 +31,8 @@ const Login = () => {
     onSubmit: async (values, { setSubmitting, setErrors }) => {
       try {
         const response = await axios.post(routes.loginPath(), values);
-        const userId = localStorage.getItem('userId');
         auth.login(response.data);
+        const userId = localStorage.getItem('userId');
 
         if (!userId) {
           navigate('/login');
@@ -91,11 +91,11 @@ const Login = () => {
                   Войти
                 </Button>
               </Form>
-              <div className="card-footer p-4">
-                <div className="text-center">
-                  <span>Нет аккаунта?&nbsp;</span>
-                  <a href="/signup">Регистрация</a>
-                </div>
+            </div>
+            <div className="card-footer p-4">
+              <div className="text-center">
+                <span>Нет аккаунта?&nbsp;</span>
+                <a href="/signup">Регистрация</a>
               </div>
             </div>
           </div>

@@ -2,7 +2,9 @@ import React, { useState, useMemo } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import LoginForm from './Login.jsx';
 import NotFound from './NotFound.jsx';
-import Channels from './ChannelsBox.jsx';
+import ChannelsBox from './ChannelsBox.jsx';
+import NavBar from './NavBar.jsx';
+import SignUp from './SignUp.jsx';
 import { AuthContext } from '../contexts/index.js';
 
 const ContextProvider = ({ children }) => {
@@ -12,6 +14,7 @@ const ContextProvider = ({ children }) => {
   const values = useMemo(() => {
     const login = (data) => {
       localStorage.setItem('user', data.username);
+      localStorage.setItem('userId', data.token);
       setUser(currentUser);
     };
 
@@ -25,7 +28,15 @@ const ContextProvider = ({ children }) => {
       return {};
     };
 
-    return { login, user, getAuthHeader };
+    const logout = () => {
+      localStorage.setItem('user', '');
+      localStorage.setItem('userId', '');
+      setUser(null);
+    };
+
+    return {
+      login, user, getAuthHeader, logout,
+    };
   }, [currentUser, user]);
 
   return (
@@ -38,9 +49,11 @@ const ContextProvider = ({ children }) => {
 const App = () => (
   <ContextProvider>
     <Router>
+      <NavBar />
       <Routes>
-        <Route path="/" element={<Channels />} />
+        <Route path="/" element={<ChannelsBox />} />
         <Route path="/login" element={<LoginForm />} />
+        <Route path="/signup" element={<SignUp />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </Router>
