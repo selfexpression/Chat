@@ -34,6 +34,7 @@ export default {
       passwordMinLength: 'Не менее 6 символов',
       confirmPasswordMatch: 'Пароли должны совпадать',
       userExists: 'Такой пользователь уже существует',
+      wrongData: 'Неверные имя пользователя или пароль',
     },
     newChannel: {
       modalTitle: 'Добавить канал',
@@ -60,13 +61,20 @@ export default {
       title: 'Регистрация',
       usernameLabel: 'Имя пользователя',
       passwordLabel: 'Пароль',
-      confirmPasswordLabel: 'Подтвердите пароль',
+      confirmLabel: 'Подтвердите пароль',
       signUpButton: 'Зарегистрироваться',
     },
     notFound: {
       title: 'Страница не найдена',
       message: 'Но вы можете перейти на ',
       link: 'главную страницу',
+    },
+    toast: {
+      createChannel: 'Канал создан',
+      renameChannel: 'Канал переименован',
+      removeChannel: 'Канал удалён',
+      networkError: 'Ошибка соединения',
+      requestError: 'Ошибка запроса',
     },
   },
 };

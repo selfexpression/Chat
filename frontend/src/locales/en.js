@@ -32,6 +32,7 @@ export default {
       passwordMinLength: 'At least 6 characters',
       confirmPasswordMatch: 'Passwords must match',
       userExists: 'User already exists',
+      wrongData: 'Incorrect username or password',
     },
     newChannel: {
       modalTitle: 'Add Channel',
@@ -58,13 +59,20 @@ export default {
       title: 'Sign Up',
       usernameLabel: 'Username',
       passwordLabel: 'Password',
-      confirmPasswordLabel: 'Confirm Password',
+      confirmLabel: 'Confirm Password',
       signUpButton: 'Sign Up',
     },
     notFound: {
       title: 'Page not found',
       message: 'But you can go to the ',
       link: 'main page',
+    },
+    toast: {
+      createChannel: 'Channel created',
+      renameChannel: 'Channel renamed',
+      removeChannel: 'Channel deleted',
+      networkError: 'Network error',
+      requestError: 'The request failed',
     },
   },
 };

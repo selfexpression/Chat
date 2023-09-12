@@ -7,7 +7,7 @@ const NotFound = () => {
 
   return (
     <div className="text-center">
-      <img src={image} className="img-fluid h-75" alt="Страница не найдена" />
+      <img src={image} className="img-fluid h-75" alt={t('notFound.title')} />
       <h1 className="h4 text-muted">{t('notFound.title')}</h1>
       <p className="text-muted">
         {t('notFound.message')}

@@ -29,8 +29,12 @@ const NavBar = () => {
       <Container>
         <div className="d-flex align-items-center">
           <div className="mr-2">
-            <NavDropdown title={t('lang.currentLang')} id="navbarScrollingDropdown" className="mx-2">
-              <NavDropdown.Item onClick={handleLangSwitch}>{t('lang.changeLang')}</NavDropdown.Item>
+            <NavDropdown title={t('lang.currentLang')} className="mx-2">
+              <NavDropdown.Item
+                onClick={handleLangSwitch}
+              >
+                {t('lang.changeLang')}
+              </NavDropdown.Item>
             </NavDropdown>
           </div>
           <div className="mr-2" />

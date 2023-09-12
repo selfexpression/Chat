@@ -9,27 +9,27 @@ import routes from '../utils/routes.js';
 import { useAuth } from '../hooks/index.js';
 import image from '../assets/signup.jpg';
 
+const schema = (t) => Yup.object().shape({
+  username: Yup
+    .string()
+    .required(t('validation.required'))
+    .min(3, t('validation.usernameMinLength'))
+    .max(20),
+  password: Yup
+    .string()
+    .required(t('validation.required'))
+    .min(6, t('validation.passwordMinLength')),
+  confirm: Yup
+    .string()
+    .required(t('validation.required'))
+    .oneOf([Yup.ref('password')], t('validation.confirmPasswordMatch')),
+});
+
 const SignUp = () => {
   const { t } = useTranslation();
   const auth = useAuth();
   const navigate = useNavigate();
   const inputRef = useRef(null);
-
-  const schema = Yup.object().shape({
-    username: Yup
-      .string()
-      .required(t('validation.required'))
-      .min(3, t('validation.usernameMinLength'))
-      .max(20),
-    password: Yup
-      .string()
-      .required(t('validation.required'))
-      .min(6, t('validation.passwordMinLength')),
-    confirm: Yup
-      .string()
-      .required(t('validation.required'))
-      .oneOf([Yup.ref('password')], t('validation.confirmPasswordMatch')),
-  });
 
   useEffect(() => {
     inputRef.current.focus();
@@ -41,7 +41,7 @@ const SignUp = () => {
       password: '',
       confirm: '',
     },
-    validationSchema: schema,
+    validationSchema: schema(t),
     onSubmit: async (values, { setSubmitting, setErrors }) => {
       try {
         const response = await axios.post(routes.signupPath(), values);
@@ -68,46 +68,34 @@ const SignUp = () => {
               <div>
                 <img src={image} className="rounded-circle" alt="signup" />
               </div>
-              <Form className="col-12 col-md-6 mt-3 mt-md-0" onSubmit={formik.handleSubmit}>
+              <Form
+                className="col-12 col-md-6 mt-3 mt-md-0"
+                onSubmit={formik.handleSubmit}
+              >
                 <h1 className="text-center mb-4">{t('signUp.title')}</h1>
-                <Form.Group className="form-floating mb-3">
-                  <Form.Control
-                    type="text"
-                    name="username"
-                    id="username"
-                    className={`form-control ${formik.errors.username || formik.errors.userExists ? 'is-invalid' : ''}`}
-                    placeholder={t('signUp.usernameLabel')}
-                    onChange={formik.handleChange}
-                    ref={inputRef}
-                  />
-                  {formik.errors.username ? (<div className="invalid-tooltip">{formik.errors.username}</div>) : ''}
-                  <label htmlFor="username" className="form-label">{t('signUp.usernameLabel')}</label>
-                </Form.Group>
-                <Form.Group className="form-floating mb-4">
-                  <Form.Control
-                    type="password"
-                    name="password"
-                    id="password"
-                    className={`form-control ${formik.errors.password || formik.errors.userExists ? 'is-invalid' : ''}`}
-                    placeholder={t('signUp.passwordLabel')}
-                    onChange={formik.handleChange}
-                  />
-                  {formik.errors.password ? (<div className="invalid-tooltip">{formik.errors.password}</div>) : ''}
-                  <label htmlFor="password" className="form-label">{t('signUp.passwordLabel')}</label>
-                </Form.Group>
-                <Form.Group className="form-floating mb-4">
-                  <Form.Control
-                    type="password"
-                    name="confirm"
-                    id="confirm"
-                    className={`form-control ${formik.errors.confirm || formik.errors.userExists ? 'is-invalid' : ''}`}
-                    placeholder={t('signUp.confirmPasswordLabel')}
-                    onChange={formik.handleChange}
-                  />
-                  {formik.errors.confirm ? (<div className="invalid-tooltip">{formik.errors.confirm}</div>) : ''}
-                  {formik.errors.userExists ? (<div className="invalid-tooltip">{formik.errors.userExists}</div>) : ''}
-                  <label htmlFor="password" className="form-label">{t('signUp.confirmPasswordLabel')}</label>
-                </Form.Group>
+                {Object.keys(formik.values).map((field) => (
+                  <Form.Group key={field} className="form-floating mb-3">
+                    <Form.Control
+                      type={field !== 'username' ? 'password' : 'text'}
+                      name={field}
+                      id={field}
+                      className={`form-control 
+                      ${formik.errors[field] || formik.errors.userExists
+                        ? 'is-invalid'
+                        : ''
+                      }`}
+                      placeholder={t(`signUp.${field}Label`)}
+                      onChange={formik.handleChange}
+                      ref={inputRef}
+                    />
+                    {(formik.errors[field]
+                      ? (<div className="invalid-tooltip">{formik.errors[field]}</div>)
+                      : '')}
+                    <label htmlFor={field} className="form-label">
+                      {t(`signUp.${field}Label`)}
+                    </label>
+                  </Form.Group>
+                ))}
                 <Button
                   type="submit"
                   variant="outline-primary"

@@ -7,11 +7,13 @@ import * as Yup from 'yup';
 import cn from 'classnames';
 import { useFormik } from 'formik';
 import { useTranslation } from 'react-i18next';
+import 'react-toastify/dist/ReactToastify.css';
 import { actions as dataActions } from '../slices/dataSlice.js';
 import {
   getData, getModal, getLastChannelId, getChannelById,
 } from '../utils/selectors.js';
 import { handleClose, handleRemove, handleRename } from '../controllers/index.js';
+import notify from '../utils/notify.js';
 
 const getNewChannelId = (lastId) => lastId + 1;
 
@@ -53,6 +55,7 @@ const NewChannel = ({ value }) => {
       dispatch(dataActions.addChannel(newChannel));
       setSubmitting(false);
       handleClose(value)();
+      notify('success', t, 'toast.createChannel');
     },
   });
 
@@ -137,7 +140,10 @@ const RemoveChannel = ({ id, value }) => {
           <Button
             variant="danger"
             className="me-2"
-            onClick={handleRemove(id)}
+            onClick={() => {
+              handleRemove(id, value)();
+              notify('success', t, 'toast.removeChannel');
+            }}
           >
             {t('removeChannel.deleteButton')}
           </Button>
@@ -175,6 +181,7 @@ const RenameChannel = ({ id, value }) => {
       handleRename(name, id)();
       setSubmitting(false);
       handleClose(value)();
+      notify('success', t, 'toast.renameChannel');
     },
   });
 

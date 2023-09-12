@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { ToastContainer } from 'react-toastify';
 import LoginForm from './Login.jsx';
 import NotFound from './NotFound.jsx';
 import Channels from './Channels.jsx';
@@ -58,6 +59,7 @@ const App = () => (
           <Route path="*" element={<NotFound />} />
         </Routes>
       </div>
+      <ToastContainer />
     </Router>
   </AuthContextProvider>
 );

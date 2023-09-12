@@ -3,11 +3,13 @@ import { useFormik } from 'formik';
 import { Button, Form } from 'react-bootstrap';
 import * as Yup from 'yup';
 import axios from 'axios';
+import cn from 'classnames';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import routes from '../utils/routes.js';
 import { useAuth } from '../hooks/index.js';
 import image from '../assets/login.jpeg';
+import notify from '../utils/notify.js';
 
 const schema = Yup.object().shape({
   username: Yup.string().required(),
@@ -31,21 +33,35 @@ const Login = () => {
     },
     validationSchema: schema,
     onSubmit: async (values, { setSubmitting, setErrors }) => {
-      try {
-        const response = await axios.post(routes.loginPath(), values);
-        auth.login(response.data);
-        const userId = localStorage.getItem('userId');
+      const response = await axios.post(routes.loginPath(), values)
+        .catch((error) => {
+          switch (error.code) {
+            case 'ERR_BAD_REQUEST':
+              setErrors({ auth: t('validation.wrongData') });
+              break;
+            case 'ERR_NETWORK': {
+              notify('error', t, 'toast.networkError');
+              break;
+            }
+            default: {
+              notify('error', t, 'toast.requestError');
+              break;
+            }
+          }
 
-        if (!userId) {
-          navigate('/login');
-          return;
-        }
+          return error;
+        });
 
-        navigate('/');
-        setSubmitting(false);
-      } catch (error) {
-        setErrors({ auth: error.message });
+      auth.login(response.data);
+      const userId = localStorage.getItem('userId');
+
+      if (!userId) {
+        navigate('/login');
+        return;
       }
+
+      navigate('/');
+      setSubmitting(false);
     },
   });
 
@@ -58,32 +74,31 @@ const Login = () => {
               <div className="col-12 col-md-6 d-flex align-items-center justify-content-center">
                 <img src={image} className="rounded-circle" alt="login" />
               </div>
-              <Form className="col-12 col-md-6 mt-3 mt-md-0" onSubmit={formik.handleSubmit}>
+              <Form
+                className="col-12 col-md-6 mt-3 mt-md-0"
+                onSubmit={formik.handleSubmit}
+              >
                 <h1 className="text-center mb-4">{t('login.title')}</h1>
-                <Form.Group className="form-floating mb-3">
-                  <Form.Control
-                    type="text"
-                    name="username"
-                    id="username"
-                    className={`form-control ${formik.errors.auth ? 'is-invalid' : ''}`}
-                    placeholder={t('login.usernameLabel')}
-                    onChange={formik.handleChange}
-                    ref={inputRef}
-                  />
-                  <label htmlFor="username" className="form-label">{t('login.usernameLabel')}</label>
-                </Form.Group>
-                <Form.Group className="form-floating mb-4">
-                  <Form.Control
-                    type="password"
-                    name="password"
-                    id="password"
-                    className={`form-control ${formik.errors.auth ? 'is-invalid' : ''}`}
-                    placeholder={t('login.passwordLabel')}
-                    onChange={formik.handleChange}
-                  />
-                  {formik.errors.auth ? (<div className="invalid-tooltip">{formik.errors.auth}</div>) : null}
-                  <label htmlFor="password" className="form-label">{t('login.passwordLabel')}</label>
-                </Form.Group>
+                {Object.keys(formik.values).map((field) => (
+                  <Form.Group key={field} className="form-floating mb-3">
+                    <Form.Control
+                      type={field !== 'username' ? 'password' : 'text'}
+                      name={field}
+                      id={field}
+                      className={cn({
+                        'form-control': true,
+                        'is-invalid': formik.errors.auth ?? '',
+                      })}
+                      placeholder={t(`login.${field}Label`)}
+                      onChange={formik.handleChange}
+                      ref={inputRef}
+                    />
+                    {field === 'confirm' && formik.errors.auth
+                      ? (<div className="invalid-tooltip">{formik.errors.auth}</div>)
+                      : ''}
+                    <label htmlFor={field} className="form-label">{t(`login.${field}Label`)}</label>
+                  </Form.Group>
+                ))}
                 <Button
                   type="submit"
                   variant="outline-primary"

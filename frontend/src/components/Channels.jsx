@@ -13,6 +13,7 @@ import { useAuth } from '../hooks/index.js';
 import ModalWindow from './ModalWindow.jsx';
 import { getData, getModal } from '../utils/selectors.js';
 import { handleChannel, handleCurrentModal, handleShow } from '../controllers/index.js';
+import notify from '../utils/notify.js';
 
 const types = {
   newChannel: 'newChannel',
@@ -20,9 +21,8 @@ const types = {
   renameChannel: 'renameChannel',
 };
 
-const Title = () => {
-  const { t } = useTranslation();
-  const { isShow } = useSelector(getModal);
+const Title = ({ values }) => {
+  const { t, isShow } = values;
 
   return (
     <div className="d-flex mt-1 justify-content-between mb-2 ps-4 pe-2 p-4">
@@ -40,11 +40,13 @@ const Title = () => {
   );
 };
 
-const ChannelsBox = () => {
-  const { t } = useTranslation();
-  const { isShow } = useSelector(getModal);
-  const data = useSelector(getData);
-  const { channels, currentChannelId } = data;
+const ChannelsBox = ({ values }) => {
+  const {
+    t, isShow, channels, currentChannelId,
+  } = values;
+
+  const variants = (id, currentId) => id === currentId ? 'secondary' : '';
+  const typeNames = ['remove', 'rename'];
 
   return (
     <ul id="channels-box" className="nav flex-column nav-pills nav-fill px-2 mb-3 overflow-auto h-100 d-block">
@@ -55,7 +57,7 @@ const ChannelsBox = () => {
               <Dropdown as={ButtonGroup} className="d-flex">
                 <Button
                   className="w-100 rounded-0 text-start text-truncate"
-                  variant={id === currentChannelId ? 'secondary' : ''}
+                  variant={variants(id, currentChannelId)}
                   onClick={handleChannel(id)}
                 >
                   <span className="me-1">#</span>
@@ -64,27 +66,25 @@ const ChannelsBox = () => {
                 <Dropdown.Toggle
                   split
                   className="flex-grow-0"
-                  variant={id === currentChannelId ? 'secondary' : ''}
+                  variant={variants(id, currentChannelId)}
                   id="dropdown-split-basic"
                 />
                 <Dropdown.Menu>
-                  <Dropdown.Item
-                    onClick={handleCurrentModal(types.removeChannel, isShow, id)}
-                  >
-                    {t('channels.removeChannel')}
-                  </Dropdown.Item>
-                  <Dropdown.Item
-                    onClick={handleCurrentModal(types.renameChannel, isShow, id)}
-                  >
-                    {t('channels.renameChannel')}
-                  </Dropdown.Item>
+                  {typeNames.map((type) => (
+                    <Dropdown.Item
+                      key={type}
+                      onClick={handleCurrentModal(types[`${type}Channel`], isShow, id)}
+                    >
+                      {t(`channels.${type}Channel`)}
+                    </Dropdown.Item>
+                  ))}
                 </Dropdown.Menu>
               </Dropdown>
             )
             : (
               <Button
                 className="w-100 rounded-0 text-start"
-                variant={id === currentChannelId ? 'secondary' : ''}
+                variant={variants}
                 onClick={handleChannel(id)}
               >
                 <span className="me-1">#</span>
@@ -98,6 +98,7 @@ const ChannelsBox = () => {
 };
 
 const Channels = () => {
+  const { t } = useTranslation();
   const [dataLoaded, setDataLoaded] = useState(false);
   const { isShow } = useSelector(getModal);
   const auth = useAuth();
@@ -107,13 +108,20 @@ const Channels = () => {
   useEffect(() => {
     const getAxiosData = async () => {
       const headers = auth.getAuthHeader();
-      const response = await axios.get(routes.dataPath(), { headers });
+      const response = await axios.get(routes.dataPath(), { headers })
+        .catch((error) => {
+          const errorPath = error.code === 'ERR_NETWORK'
+            ? t('toast.networkError')
+            : t('toast.requestError');
+
+          notify('error', t, errorPath);
+        });
       dispatch(dataActions.addData(response.data));
       setDataLoaded(true);
     };
 
     getAxiosData();
-  }, [auth, dispatch]);
+  }, [auth, dispatch, t]);
 
   if (!dataLoaded) return null;
 
@@ -126,8 +134,11 @@ const Channels = () => {
       <div className="container h-100 my-4 overflow-hidden rounded shadow">
         <div className="row h-100 bg-white flex-md-row">
           <div className="col-4 col-md-2 border-end px-0 bg-light flex-column h-100 d-flex">
-            <Title />
-            <ChannelsBox />
+            <Title values={{ t, isShow }} />
+            <ChannelsBox values={{
+              t, isShow, data, channels, currentChannelId,
+            }}
+            />
           </div>
           <Chat current={currentChannel} />
         </div>
