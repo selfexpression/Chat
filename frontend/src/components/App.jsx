@@ -10,13 +10,13 @@ import { AuthContext } from '../contexts/index.js';
 
 const AuthContextProvider = ({ children }) => {
   const currentUser = localStorage.getItem('user');
-  const [user, setUser] = useState(currentUser ?? null);
+  const [user, setUser] = useState(currentUser ?? '');
 
   const values = useMemo(() => {
     const login = (data) => {
       localStorage.setItem('user', data.username);
       localStorage.setItem('userId', data.token);
-      setUser(currentUser);
+      setUser(data.username);
     };
 
     const getAuthHeader = () => {
@@ -38,7 +38,7 @@ const AuthContextProvider = ({ children }) => {
     return {
       login, user, getAuthHeader, logout,
     };
-  }, [currentUser, user]);
+  }, [user]);
 
   return (
     <AuthContext.Provider value={values}>

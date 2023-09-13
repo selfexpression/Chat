@@ -6,7 +6,7 @@ import { Button, Form, InputGroup } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
 import { useAuth, useApi } from '../hooks/index.js';
 import { messagesSelectors } from '../slices/messagesSlice.js';
-import profanityFilter from '../locales/badWords.js';
+import profanityFilter from '../utils/badWords.js';
 
 const MessagesBox = ({ currentChannelMessages }) => (
   <div id="messages-box" className="chat-messages overflow-auto px-5 ">
