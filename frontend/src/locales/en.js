@@ -72,7 +72,7 @@ export default {
       renameChannel: 'Channel renamed',
       removeChannel: 'Channel deleted',
       networkError: 'Network error',
-      requestError: 'The request failed',
+      requestError: 'Error loading data',
     },
   },
 };

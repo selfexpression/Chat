@@ -6,6 +6,7 @@ import { Button, Form, InputGroup } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
 import { useAuth, useApi } from '../hooks/index.js';
 import { messagesSelectors } from '../slices/messagesSlice.js';
+import profanityFilter from '../locales/badWords.js';
 
 const MessagesBox = ({ currentChannelMessages }) => (
   <div id="messages-box" className="chat-messages overflow-auto px-5 ">
@@ -50,8 +51,9 @@ const Chat = ({ current }) => {
       body: '',
     },
     onSubmit: ({ body }, { setSubmitting, resetForm }) => {
+      const filteredWords = profanityFilter(body);
       const newMessage = {
-        body,
+        body: filteredWords,
         channelId: current.id,
         username: user,
       };

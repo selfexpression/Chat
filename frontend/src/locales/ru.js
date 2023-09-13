@@ -74,7 +74,7 @@ export default {
       renameChannel: 'Канал переименован',
       removeChannel: 'Канал удалён',
       networkError: 'Ошибка соединения',
-      requestError: 'Ошибка запроса',
+      requestError: 'Ошибка загрузки данных',
     },
   },
 };
