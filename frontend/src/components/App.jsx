@@ -7,6 +7,7 @@ import Channels from './Channels.jsx';
 import NavBar from './NavBar.jsx';
 import SignUp from './SignUp.jsx';
 import { AuthContext } from '../contexts/index.js';
+import routes from '../utils/routes.js';
 
 const AuthContextProvider = ({ children }) => {
   const currentUser = localStorage.getItem('user');
@@ -53,10 +54,10 @@ const App = () => (
       <div className="d-flex flex-column h-100">
         <NavBar />
         <Routes>
-          <Route path="/" element={<Channels />} />
-          <Route path="/login" element={<LoginForm />} />
-          <Route path="/signup" element={<SignUp />} />
-          <Route path="*" element={<NotFound />} />
+          <Route path={routes.chatPagePath()} element={<Channels />} />
+          <Route path={routes.loginPagePath()} element={<LoginForm />} />
+          <Route path={routes.signupPagePath()} element={<SignUp />} />
+          <Route path={routes.badPagePath()} element={<NotFound />} />
         </Routes>
       </div>
       <ToastContainer />

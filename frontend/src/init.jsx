@@ -37,7 +37,7 @@ const runApp = async () => {
     });
 
   const rollbarConfig = {
-    accessToken: '523fd3a4cee241fbb4541c8c490f90ec',
+    accessToken: process.env.ROLLBAR_ACCESS_TOKEN,
     captureUncaught: true,
     captureUnhandledRejections: true,
   };
