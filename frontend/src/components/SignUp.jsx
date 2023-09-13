@@ -98,7 +98,7 @@ const SignUp = () => {
                       }`}
                       placeholder={t(`signUp.${field}Label`)}
                       onChange={formik.handleChange}
-                      ref={inputRef}
+                      ref={field === 'username' ? inputRef : null}
                     />
                     {(formik.errors[field]
                       ? (<div className="invalid-tooltip">{formik.errors[field]}</div>)

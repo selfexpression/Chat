@@ -55,12 +55,12 @@ const Login = () => {
         });
 
       auth.login(response.data);
-      const userId = localStorage.getItem('userId');
+      // const userId = localStorage.getItem('userId');
 
-      if (!userId) {
-        navigate('/login');
-        return;
-      }
+      // if (!userId) {
+      //   navigate('/login');
+      //   return;
+      // }
 
       navigate('/');
       setSubmitting(false);

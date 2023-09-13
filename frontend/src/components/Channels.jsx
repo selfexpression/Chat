@@ -6,6 +6,7 @@ import {
   Button, Dropdown, ButtonGroup,
 } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import { actions as dataActions } from '../slices/dataSlice.js';
 import routes from '../utils/routes.js';
 import Chat from './Chat.jsx';
@@ -101,6 +102,7 @@ const Channels = () => {
   const { t } = useTranslation();
   const [dataLoaded, setDataLoaded] = useState(false);
   const { isShow } = useSelector(getModal);
+  const navigate = useNavigate();
   const auth = useAuth();
   const dispatch = useDispatch();
   const data = useSelector(getData);
@@ -108,6 +110,13 @@ const Channels = () => {
   useEffect(() => {
     const getAxiosData = async () => {
       const headers = auth.getAuthHeader();
+      const userId = localStorage.getItem('userId');
+
+      if (!userId) {
+        navigate('/login');
+        return;
+      }
+
       const response = await axios.get(routes.dataPath(), { headers })
         .catch((error) => {
           const errorPath = error.code === 'ERR_NETWORK'
@@ -121,7 +130,7 @@ const Channels = () => {
     };
 
     getAxiosData();
-  }, [auth, dispatch, t]);
+  }, [auth, dispatch, t, navigate]);
 
   if (!dataLoaded) return null;
 
