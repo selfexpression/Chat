@@ -84,7 +84,7 @@ const ChannelsBox = ({ values }) => {
             : (
               <Button
                 className="w-100 rounded-0 text-start"
-                variant={variants}
+                variant={variants(id, currentChannelId)}
                 onClick={handleChannel(id)}
               >
                 <span className="me-1">#</span>

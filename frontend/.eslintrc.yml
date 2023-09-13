@@ -31,8 +31,8 @@ rules:
   functional/immutable-data: 0
   functional/no-return-void: 0
   functional/functional-parameters: 0
-  functional/no-try-statement: 0
-  functional/no-throw-statement: 0
+  functional/no-try-statements: 0
+  functional/no-throw-statements: 0
   no-underscore-dangle: [2, { "allow": ["__filename", "__dirname"] }]
   react/function-component-definition: [2, { "namedComponents": "arrow-function" }]
   testing-library/no-debug: 0
