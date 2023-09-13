@@ -1,19 +1,20 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { PlusSquare } from 'react-bootstrap-icons';
 import {
   Button, Dropdown, ButtonGroup,
 } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { actions as dataActions } from '../slices/dataSlice.js';
 import routes from '../utils/routes.js';
 import Chat from './Chat.jsx';
 import { useAuth } from '../hooks/index.js';
 import ModalWindow from './ModalWindow.jsx';
 import { getData, getModal } from '../utils/selectors.js';
-import { handleChannel, handleCurrentModal, handleShow } from '../controllers/index.js';
+import {
+  handleChannel, handleCurrentModal, handleShow, handleLoadingData,
+} from '../controllers/index.js';
 import notify from '../utils/notify.js';
 
 const types = {
@@ -104,19 +105,18 @@ const Channels = () => {
   const { isShow } = useSelector(getModal);
   const navigate = useNavigate();
   const auth = useAuth();
-  const dispatch = useDispatch();
   const data = useSelector(getData);
 
   useEffect(() => {
+    const userId = localStorage.getItem('userId');
+
+    if (!userId) {
+      navigate('/login');
+      return;
+    }
+
     const getAxiosData = async () => {
       const headers = auth.getAuthHeader();
-      const userId = localStorage.getItem('userId');
-
-      if (!userId) {
-        navigate('/login');
-        return;
-      }
-
       const response = await axios.get(routes.dataPath(), { headers })
         .catch((error) => {
           const errorPath = error.code === 'ERR_NETWORK'
@@ -125,12 +125,13 @@ const Channels = () => {
 
           notify('error', t, errorPath);
         });
-      dispatch(dataActions.addData(response.data));
+
+      handleLoadingData(response.data);
       setDataLoaded(true);
     };
 
     getAxiosData();
-  }, [auth, dispatch, t, navigate]);
+  }, [auth, t, navigate]);
 
   if (!dataLoaded) return null;
 

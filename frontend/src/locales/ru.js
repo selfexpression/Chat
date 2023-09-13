@@ -20,11 +20,11 @@ export default {
     },
     login: {
       title: 'Вход',
-      usernameLabel: 'Имя пользователя',
+      usernameLabel: 'Ваш ник',
       passwordLabel: 'Пароль',
       loginButton: 'Войти',
       noAccount: 'Нет аккаунта?',
-      signUpLink: 'Зарегистрироваться',
+      signUpLink: 'Регистрация',
     },
     validation: {
       unique: 'Должно быть уникальным',

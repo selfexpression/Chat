@@ -7,21 +7,35 @@ import i18next from 'i18next';
 import { Provider as RollbarProvider, ErrorBoundary } from '@rollbar/react';
 import { Provider } from 'react-redux';
 import App from './components/App.jsx';
-import store from './slices/index.js';
+import store, { actions } from './slices/index.js';
 import { ApiContext } from './contexts/index.js';
-import { actions } from './slices/messagesSlice.js';
 import resources from './locales/index.js';
 
 const runApp = async () => {
   const socket = io();
 
-  socket.on('newMessage', (message) => {
-    store.dispatch(actions.addMessage(message));
+  const socketAPI = {
+    sendMessage: (payload) => socket.emit('newMessage', payload),
+    removeChannel: (id) => socket.emit('removeChannel', { id }),
+    addChannel: (name) => socket.emit('newChannel', { name }),
+    renameChannel: (id, name) => socket.emit('renameChannel', { id, name }),
+  };
+
+  socket.on('newMessage', (payload) => {
+    store.dispatch(actions.addMessage(payload));
   });
 
-  const sendMessage = (messageInfo) => {
-    socket.emit('newMessage', messageInfo);
-  };
+  socket.on('removeChannel', (payload) => {
+    store.dispatch(actions.removeChannel(payload));
+  });
+
+  socket.on('newChannel', (payload) => {
+    store.dispatch(actions.addChannel(payload));
+  });
+
+  socket.on('renameChannel', (payload) => {
+    store.dispatch(actions.renameChannel(payload));
+  });
 
   const i18n = i18next.createInstance();
 
@@ -49,7 +63,7 @@ const runApp = async () => {
     <RollbarProvider config={rollbarConfig}>
       <ErrorBoundary>
         <Provider store={store}>
-          <ApiContext.Provider value={{ sendMessage }}>
+          <ApiContext.Provider value={socketAPI}>
             <I18nextProvider i18n={i18n}>
               <App />
             </I18nextProvider>

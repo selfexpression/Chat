@@ -67,10 +67,6 @@ const Chat = ({ current }) => {
   const messages = useSelector(messagesSelectors.selectAll);
   const currentChannelMessages = messages.filter((message) => message.channelId === current.id);
 
-  if (messages.length !== 0) {
-    throw new Error('!!!!!!!!!!');
-  }
-
   return (
     <div className="col p-0 h-100">
       <div className="d-flex flex-column h-100">

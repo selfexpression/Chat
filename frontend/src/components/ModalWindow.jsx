@@ -1,5 +1,5 @@
 import React, { useRef, useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import {
   Button, Modal, Form, InputGroup, FormControl,
 } from 'react-bootstrap';
@@ -8,14 +8,12 @@ import cn from 'classnames';
 import { useFormik } from 'formik';
 import { useTranslation } from 'react-i18next';
 import 'react-toastify/dist/ReactToastify.css';
-import { actions as dataActions } from '../slices/dataSlice.js';
+import { useApi } from '../hooks/index.js';
 import {
-  getData, getModal, getLastChannelId, getChannelById,
+  getData, getModal, getChannelById,
 } from '../utils/selectors.js';
-import { handleClose, handleRemove, handleRename } from '../controllers/index.js';
+import { handleClose } from '../controllers/index.js';
 import notify from '../utils/notify.js';
-
-const getNewChannelId = (lastId) => lastId + 1;
 
 const schema = (t, channels) => Yup.object().shape({
   name: Yup.string().min(3, t('validation.minLength')).max(20)
@@ -28,8 +26,7 @@ const schema = (t, channels) => Yup.object().shape({
 
 const NewChannel = ({ values }) => {
   const { isShow, channels, t } = values;
-  const dispatch = useDispatch();
-  const { id: lastChannelId } = useSelector(getLastChannelId);
+  const { addChannel } = useApi();
   const inputRef = useRef(null);
 
   useEffect(() => {
@@ -44,16 +41,7 @@ const NewChannel = ({ values }) => {
     },
     validationSchema: schema(t, channels),
     onSubmit: ({ name }, { setSubmitting }) => {
-      const id = getNewChannelId(lastChannelId);
-
-      const newChannel = {
-        id,
-        name,
-        removable: true,
-      };
-
-      dispatch(dataActions.setChannel(id));
-      dispatch(dataActions.addChannel(newChannel));
+      addChannel(name);
       setSubmitting(false);
       handleClose(isShow)();
       notify('success', t, 'toast.createChannel');
@@ -115,6 +103,7 @@ const NewChannel = ({ values }) => {
 
 const RemoveChannel = ({ values }) => {
   const { id, isShow, t } = values;
+  const { removeChannel } = useApi();
 
   return (
     <>
@@ -142,7 +131,8 @@ const RemoveChannel = ({ values }) => {
             variant="danger"
             className="me-2"
             onClick={() => {
-              handleRemove(id, isShow)();
+              removeChannel(id);
+              handleClose(isShow)();
               notify('success', t, 'toast.removeChannel');
             }}
           >
@@ -158,6 +148,7 @@ const RenameChannel = ({ values }) => {
   const {
     id, isShow, channels, t,
   } = values;
+  const { renameChannel } = useApi();
   const currentChannel = useSelector(getChannelById(id));
   const inputRef = useRef(null);
 
@@ -173,7 +164,7 @@ const RenameChannel = ({ values }) => {
     },
     validationSchema: schema(t, channels),
     onSubmit: ({ name }, { setSubmitting }) => {
-      handleRename(name, id)();
+      renameChannel(id, name);
       setSubmitting(false);
       handleClose(isShow)();
       notify('success', t, 'toast.renameChannel');

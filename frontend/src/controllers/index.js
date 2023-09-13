@@ -18,12 +18,6 @@ export const handleClose = (value) => () => {
   store.dispatch(modalActions.modalControl(!value));
 };
 
-export const handleRemove = (id, value) => () => {
-  store.dispatch(dataActions.removeChannel(id));
-  handleChannel(1)();
-  handleClose(value)();
-};
-
-export const handleRename = (name, id) => () => {
-  store.dispatch(dataActions.renameChannel({ id, name }));
+export const handleLoadingData = (data) => {
+  store.dispatch(dataActions.addData(data));
 };
