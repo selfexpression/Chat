@@ -70,8 +70,9 @@ const ChannelsBox = ({ values }) => {
                   className="flex-grow-0"
                   variant={variants(id, currentChannelId)}
                   id="dropdown-split-basic"
-                />
-                <span className="visually-hidden">{t('channels.menu')}</span>
+                >
+                  <span className="visually-hidden">{t('channels.menu')}</span>
+                </Dropdown.Toggle>
                 <Dropdown.Menu>
                   {typeNames.map((type) => (
                     <Dropdown.Item
