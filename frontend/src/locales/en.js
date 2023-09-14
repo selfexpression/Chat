@@ -52,6 +52,7 @@ export default {
       cancelButton: 'Cancel',
       submitButton: 'Submit',
       channelName: 'Channel name',
+      editChannelName: 'New channel name',
     },
     navBar: {
       logoAlt: 'Logo',

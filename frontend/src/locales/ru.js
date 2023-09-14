@@ -54,6 +54,7 @@ export default {
       cancelButton: 'Отменить',
       channelName: 'Имя канала',
       submitButton: 'Отправить',
+      editChannelName: 'Новое имя канала',
     },
     navBar: {
       logoAlt: 'Лого',
