@@ -11,6 +11,7 @@ export default {
       messageCount_0: '{{count}} messages',
       messageCount_one: '{{count}} message',
       messageCount_other: '{{count}} messages',
+      menu: 'Channel management',
     },
     chat: {
       newMessagePlaceholder: 'Enter a new message...',

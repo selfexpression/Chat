@@ -8,6 +8,7 @@ export default {
       title: 'Каналы',
       removeChannel: 'Удалить',
       renameChannel: 'Переименовать',
+      menu: 'Управление каналом',
       messageCount_0: '{{count}} сообщений',
       messageCount_one: '{{count}} сообщение',
       messageCount_few: '{{count}} сообщения',

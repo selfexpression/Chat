@@ -71,6 +71,7 @@ const ChannelsBox = ({ values }) => {
                   variant={variants(id, currentChannelId)}
                   id="dropdown-split-basic"
                 />
+                <span className="visually-hidden">{t('channels.menu')}</span>
                 <Dropdown.Menu>
                   {typeNames.map((type) => (
                     <Dropdown.Item
