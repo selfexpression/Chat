@@ -97,7 +97,7 @@ const SignUp = () => {
                         : ''
                       }`}
                       placeholder={t(`signUp.${field}Label`)}
-                      onChange={formik.handleChange}
+                      // onChange={formik.handleChange}
                       ref={field === 'username' ? inputRef : null}
                     />
                     {(formik.errors[field]

@@ -86,7 +86,7 @@ const Login = () => {
                         'is-invalid': formik.errors.auth ?? '',
                       })}
                       placeholder={t(`login.${field}Label`)}
-                      onChange={formik.handleChange}
+                      // onChange={formik.handleChange}
                       ref={inputRef}
                     />
                     {formik.errors.auth && field === 'password'
