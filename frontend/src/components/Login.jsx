@@ -1,9 +1,8 @@
 import React, { useRef, useEffect } from 'react';
 import { useFormik } from 'formik';
 import { Button, Form } from 'react-bootstrap';
-import * as Yup from 'yup';
+// import * as Yup from 'yup';
 import axios from 'axios';
-import cn from 'classnames';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import routes from '../utils/routes.js';
@@ -27,10 +26,10 @@ const axiosError = (error, setErrors, t) => {
   }
 };
 
-const schema = Yup.object().shape({
-  username: Yup.string().required(),
-  password: Yup.string().required(),
-});
+// const schema = Yup.object().shape({
+//   username: Yup.string().required(),
+//   password: Yup.string().required(),
+// });
 
 const Login = () => {
   const { t } = useTranslation();
@@ -38,16 +37,12 @@ const Login = () => {
   const navigate = useNavigate();
   const inputRef = useRef(null);
 
-  useEffect(() => {
-    inputRef.current.focus();
-  }, []);
-
   const formik = useFormik({
     initialValues: {
       username: '',
       password: '',
     },
-    validationSchema: schema,
+    // validationSchema: schema,
     onSubmit: async (values, { setSubmitting, setErrors }) => {
       const response = await axios.post(routes.loginPath(), values)
         .catch((error) => {
@@ -56,10 +51,14 @@ const Login = () => {
 
       auth.login(response.data);
 
-      navigate('/');
+      navigate(routes.chatPagePath());
       setSubmitting(false);
     },
   });
+
+  useEffect(() => {
+    inputRef.current.focus();
+  }, [formik.errors]);
 
   return (
     <div className="container-fluid h-100">
@@ -81,13 +80,13 @@ const Login = () => {
                       type={field !== 'username' ? 'password' : 'text'}
                       name={field}
                       id={field}
-                      className={cn({
-                        'form-control': true,
-                        'is-invalid': formik.errors.auth ?? '',
-                      })}
+                      className={formik.errors.auth
+                        ? 'is-invalid'
+                        : ''}
+                      required
                       placeholder={t(`login.${field}Label`)}
-                      // onChange={formik.handleChange}
-                      ref={inputRef}
+                      onChange={formik.handleChange}
+                      ref={field === 'username' ? inputRef : null}
                     />
                     {formik.errors.auth && field === 'password'
                       ? (<div className="invalid-tooltip">{formik.errors.auth}</div>)
@@ -99,7 +98,7 @@ const Login = () => {
                   type="submit"
                   variant="outline-primary"
                   className="w-100 mb-3"
-                  disabled={!formik.isValid || formik.isSubmitting}
+                  disabled={formik.isSubmitting}
                 >
                   {t('login.loginButton')}
                 </Button>

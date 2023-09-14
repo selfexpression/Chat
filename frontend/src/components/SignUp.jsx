@@ -47,10 +47,6 @@ const SignUp = () => {
   const navigate = useNavigate();
   const inputRef = useRef(null);
 
-  useEffect(() => {
-    inputRef.current.focus();
-  }, []);
-
   const formik = useFormik({
     initialValues: {
       username: '',
@@ -61,14 +57,19 @@ const SignUp = () => {
     onSubmit: async (values, { setSubmitting, setErrors }) => {
       const response = await axios.post(routes.signupPath(), values)
         .catch((error) => {
+          console.log(error);
           axiosError(error, setErrors, t);
         });
 
       auth.login(response.data);
-      navigate('/');
+      navigate(routes.chatPagePath());
       setSubmitting(false);
     },
   });
+
+  useEffect(() => {
+    inputRef.current.focus();
+  }, [formik.errors]);
 
   return (
     <div className="container-fluid h-100">
@@ -90,17 +91,20 @@ const SignUp = () => {
                       type={field !== 'username' ? 'password' : 'text'}
                       name={field}
                       id={field}
-                      className={`form-control 
-                      ${formik.errors[field] || formik.errors.userExists
+                      className={(formik.errors[field] && formik.touched[field])
+                        || formik.errors.userExists
                         ? 'is-invalid'
-                        : ''
-                      }`}
+                        : ''}
                       placeholder={t(`signUp.${field}Label`)}
-                      // onChange={formik.handleChange}
+                      onBlur={formik.handleBlur[field]}
+                      onChange={formik.handleChange}
                       ref={field === 'username' ? inputRef : null}
                     />
                     {(formik.errors[field]
                       ? (<div className="invalid-tooltip">{formik.errors[field]}</div>)
+                      : '')}
+                    {(formik.errors.userExists && field === 'confirm'
+                      ? (<div className="invalid-tooltip">{t('validation.userExists')}</div>)
                       : '')}
                     <label htmlFor={field} className="form-label">
                       {t(`signUp.${field}Label`)}
@@ -111,7 +115,7 @@ const SignUp = () => {
                   type="submit"
                   variant="outline-primary"
                   className="w-100 mb-3"
-                  disabled={!formik.isValid || formik.isSubmitting}
+                  disabled={formik.isSubmitting}
                 >
                   {t('signUp.signUpButton')}
                 </Button>
