@@ -1,7 +1,7 @@
 import React, { useRef, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import {
-  Button, Modal, Form, InputGroup, FormControl,
+  Button, Modal, Form, FormControl,
 } from 'react-bootstrap';
 import * as Yup from 'yup';
 import { useFormik } from 'formik';
@@ -65,23 +65,23 @@ const NewChannel = ({ values }) => {
       <Modal.Body>
         <Form onSubmit={formik.handleSubmit}>
           <div>
-            <InputGroup>
-              <FormControl
-                name="name"
-                type="text"
-                className="mb-2"
-                onChange={formik.handleChange}
-                isInvalid={formik.errors.name && formik.touched.name}
-                value={formik.values.name}
-                onBlur={formik.handleBlur}
-                ref={inputRef}
-                disabled={formik.isSubmitting}
-              />
-              <label className="visually-hidden" htmlFor="name">{t('newChannel.channelName')}</label>
-              {formik.errors.name
-                ? (<div className="invalid-feedback">{formik.errors.name}</div>)
-                : null}
-            </InputGroup>
+            <FormControl
+              name="name"
+              type="text"
+              id="name"
+              className="mb-2"
+              onChange={formik.handleChange}
+              aria-label={t('renameChannel.editChannelName')}
+              isInvalid={formik.errors.name && formik.touched.name}
+              value={formik.values.name}
+              onBlur={formik.handleBlur}
+              ref={inputRef}
+              required
+            />
+            <label className="visually-hidden" htmlFor="name">{t('newChannel.channelName')}</label>
+            {formik.errors.name
+              ? (<div className="invalid-feedback">{formik.errors.name}</div>)
+              : null}
             <div className="d-flex justify-content-end">
               <Button
                 variant="secondary"
