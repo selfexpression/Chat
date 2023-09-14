@@ -16,7 +16,10 @@ import { handleClose } from '../controllers/index.js';
 import notify from '../utils/notify.js';
 
 const schema = (t, channels) => Yup.object().shape({
-  name: Yup.string().min(3, t('validation.minLength')).max(20)
+  name: Yup
+    .string()
+    .min(3, t('validation.modalConstraints'))
+    .max(20, t('validation.modalConstraints'))
     .test('is-unique', t('validation.unique'), (inputValue) => {
       if (!inputValue) return true;
 

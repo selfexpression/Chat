@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { useFormik } from 'formik';
 import { Button, Form } from 'react-bootstrap';
 import * as Yup from 'yup';
@@ -14,8 +14,8 @@ const schema = (t) => Yup.object().shape({
   username: Yup
     .string()
     .required(t('validation.required'))
-    .min(3, t('validation.usernameMinLength'))
-    .max(20, t('validation.usernameMinLength')),
+    .min(3, t('validation.usernameConstraints'))
+    .max(20, t('validation.usernameConstraints')),
   password: Yup
     .string()
     .required(t('validation.required'))
@@ -25,10 +25,10 @@ const schema = (t) => Yup.object().shape({
     .oneOf([Yup.ref('password')], t('validation.confirmPasswordMatch')),
 });
 
-const axiosError = (error, setErrors, t) => {
+const axiosError = (error, t, setState) => {
   switch (error.code) {
     case 'ERR_BAD_REQUEST':
-      setErrors({ userExists: t('validation.userExists') });
+      setState(true);
       break;
     case 'ERR_NETWORK': {
       notify('error', t, 'toast.networkError');
@@ -43,6 +43,7 @@ const axiosError = (error, setErrors, t) => {
 
 const SignUp = () => {
   const { t } = useTranslation();
+  const [registrationFailed, setRegistrationFailed] = useState(false);
   const auth = useAuth();
   const navigate = useNavigate();
   const inputRef = useRef(null);
@@ -54,11 +55,12 @@ const SignUp = () => {
       confirm: '',
     },
     validationSchema: schema(t),
-    onSubmit: async (values, { setSubmitting, setErrors }) => {
+    onSubmit: async (values, { setSubmitting }) => {
+      setRegistrationFailed(false);
+
       const response = await axios.post(routes.signupPath(), values)
         .catch((error) => {
-          console.log(error);
-          axiosError(error, setErrors, t);
+          axiosError(error, t, setRegistrationFailed);
         });
 
       auth.login(response.data);
@@ -69,7 +71,7 @@ const SignUp = () => {
 
   useEffect(() => {
     inputRef.current.focus();
-  }, [formik.errors]);
+  }, []);
 
   return (
     <div className="container-fluid h-100">
@@ -91,14 +93,14 @@ const SignUp = () => {
                       type={field !== 'username' ? 'password' : 'text'}
                       name={field}
                       id={field}
-                      className={(formik.errors[field] && formik.touched[field])
-                        || formik.errors.userExists
-                        ? 'is-invalid'
-                        : ''}
+                      isInvalid={(formik.errors[field] && formik.touched[field])
+                        || registrationFailed}
                       placeholder={t(`signUp.${field}Label`)}
-                      onBlur={formik.handleBlur[field]}
+                      onBlur={formik.handleBlur}
                       onChange={formik.handleChange}
+                      required
                       ref={field === 'username' ? inputRef : null}
+                      autoComplete="off"
                     />
                     {(formik.errors[field]
                       ? (<div className="invalid-tooltip">{formik.errors[field]}</div>)

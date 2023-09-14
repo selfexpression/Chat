@@ -58,7 +58,7 @@ const Login = () => {
 
   useEffect(() => {
     inputRef.current.focus();
-  }, [formik.errors]);
+  }, []);
 
   return (
     <div className="container-fluid h-100">
@@ -87,6 +87,7 @@ const Login = () => {
                       placeholder={t(`login.${field}Label`)}
                       onChange={formik.handleChange}
                       ref={field === 'username' ? inputRef : null}
+                      autoComplete="off"
                     />
                     {formik.errors.auth && field === 'password'
                       ? (<div className="invalid-tooltip">{formik.errors.auth}</div>)

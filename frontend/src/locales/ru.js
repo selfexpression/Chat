@@ -29,8 +29,8 @@ export default {
     validation: {
       unique: 'Должно быть уникальным',
       required: 'Обязательное поле',
-      minLength: 'От 3 до 20 символов',
-      usernameMinLength: 'От 3 до 20 символов',
+      modalConstraints: 'От 3 до 20 символов',
+      usernameConstraints: 'От 3 до 20 символов',
       passwordMinLength: 'Не менее 6 символов',
       confirmPasswordMatch: 'Пароли должны совпадать',
       userExists: 'Такой пользователь уже существует',
