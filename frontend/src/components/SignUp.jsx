@@ -15,14 +15,13 @@ const schema = (t) => Yup.object().shape({
     .string()
     .required(t('validation.required'))
     .min(3, t('validation.usernameMinLength'))
-    .max(20),
+    .max(20, t('validation.usernameMinLength')),
   password: Yup
     .string()
     .required(t('validation.required'))
     .min(6, t('validation.passwordMinLength')),
   confirm: Yup
     .string()
-    .required(t('validation.required'))
     .oneOf([Yup.ref('password')], t('validation.confirmPasswordMatch')),
 });
 
