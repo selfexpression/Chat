@@ -4,7 +4,6 @@ import {
   Button, Modal, Form, InputGroup, FormControl,
 } from 'react-bootstrap';
 import * as Yup from 'yup';
-import cn from 'classnames';
 import { useFormik } from 'formik';
 import { useTranslation } from 'react-i18next';
 import 'react-toastify/dist/ReactToastify.css';
@@ -70,9 +69,11 @@ const NewChannel = ({ values }) => {
               <FormControl
                 name="name"
                 type="text"
-                className={cn('mb-2', { 'is-invalid': !formik.isValid })}
+                className="mb-2"
                 onChange={formik.handleChange}
+                isInvalid={formik.errors.name && formik.touched.name}
                 value={formik.values.name}
+                onBlur={formik.handleBlur}
                 ref={inputRef}
                 disabled={formik.isSubmitting}
               />
@@ -193,9 +194,11 @@ const RenameChannel = ({ values }) => {
               <FormControl
                 name="name"
                 type="text"
-                className={cn('mb-2', { 'is-invalid': !formik.isValid })}
+                className="mb-2"
                 onChange={formik.handleChange}
+                isInvalid={formik.errors.name && formik.touched.name}
                 value={formik.values.name}
+                onBlur={formik.handleBlur}
                 ref={inputRef}
                 disabled={formik.isSubmitting}
               />
