@@ -77,6 +77,7 @@ const NewChannel = ({ values }) => {
                 ref={inputRef}
                 disabled={formik.isSubmitting}
               />
+              <label className="visually-hidden" htmlFor="name">{t('newChannel.channelName')}</label>
               {formik.errors.name
                 ? (<div className="invalid-feedback">{formik.errors.name}</div>)
                 : null}
@@ -202,6 +203,7 @@ const RenameChannel = ({ values }) => {
                 ref={inputRef}
                 disabled={formik.isSubmitting}
               />
+              <label className="visually-hidden" htmlFor="name">{t('renameChannel.channelName')}</label>
               {formik.errors.name
                 ? (<div className="invalid-feedback">{formik.errors.name}</div>)
                 : null}

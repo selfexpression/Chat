@@ -39,6 +39,7 @@ export default {
     newChannel: {
       modalTitle: 'Добавить канал',
       cancelButton: 'Отменить',
+      channelName: 'Имя канала',
       submitButton: 'Отправить',
     },
     removeChannel: {
@@ -50,6 +51,7 @@ export default {
     renameChannel: {
       modalTitle: 'Переименовать канал',
       cancelButton: 'Отменить',
+      channelName: 'Имя канала',
       submitButton: 'Отправить',
     },
     navBar: {

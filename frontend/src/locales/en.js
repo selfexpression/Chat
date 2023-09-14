@@ -38,6 +38,7 @@ export default {
       modalTitle: 'Add Channel',
       cancelButton: 'Cancel',
       submitButton: 'Submit',
+      channelName: 'Channel name',
     },
     removeChannel: {
       modalTitle: 'Remove Channel',
@@ -49,6 +50,7 @@ export default {
       modalTitle: 'Rename Channel',
       cancelButton: 'Cancel',
       submitButton: 'Submit',
+      channelName: 'Channel name',
     },
     navBar: {
       logoAlt: 'Logo',
