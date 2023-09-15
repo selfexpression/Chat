@@ -1,7 +1,6 @@
 import React, { useRef, useEffect } from 'react';
 import { useFormik } from 'formik';
 import { Button, Form } from 'react-bootstrap';
-// import * as Yup from 'yup';
 import axios from 'axios';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
@@ -26,11 +25,6 @@ const axiosError = (error, setErrors, t) => {
   }
 };
 
-// const schema = Yup.object().shape({
-//   username: Yup.string().required(),
-//   password: Yup.string().required(),
-// });
-
 const Login = () => {
   const { t } = useTranslation();
   const auth = useAuth();
@@ -42,7 +36,6 @@ const Login = () => {
       username: '',
       password: '',
     },
-    // validationSchema: schema,
     onSubmit: async (values, { setSubmitting, setErrors }) => {
       const response = await axios.post(routes.loginPath(), values)
         .catch((error) => {

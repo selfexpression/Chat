@@ -12,7 +12,7 @@ import routes from '../utils/routes.js';
 import Chat from './Chat.jsx';
 import { useAuth } from '../hooks/index.js';
 import ModalWindow from './ModalWindow.jsx';
-import { getData, getModal } from '../utils/selectors.js';
+import { getChannelsInfo, getModal } from '../utils/selectors.js';
 import {
   handleChannel, handleCurrentModal, handleShow, handleLoadingData,
 } from '../controllers/index.js';
@@ -104,11 +104,11 @@ const ChannelsBox = ({ values }) => {
 
 const Channels = () => {
   const { t } = useTranslation();
-  const [dataLoaded, setDataLoaded] = useState(false);
+  const [channelsInfoLoaded, setChannelsInfoLoaded] = useState(false);
   const { isShow } = useSelector(getModal);
   const navigate = useNavigate();
   const auth = useAuth();
-  const data = useSelector(getData);
+  const channelsInfo = useSelector(getChannelsInfo);
 
   useEffect(() => {
     const userId = localStorage.getItem('userId');
@@ -130,15 +130,15 @@ const Channels = () => {
         });
 
       handleLoadingData(response.data);
-      setDataLoaded(true);
+      setChannelsInfoLoaded(true);
     };
 
     getAxiosData();
   }, [auth, t, navigate]);
 
-  if (!dataLoaded) return null;
+  if (!channelsInfoLoaded) return null;
 
-  const { channels, currentChannelId } = data;
+  const { channels, currentChannelId } = channelsInfo;
   const currentChannel = channels.find((channel) => channel.id === currentChannelId);
 
   return (
@@ -149,7 +149,7 @@ const Channels = () => {
           <div className="col-4 col-md-2 border-end px-0 bg-light flex-column h-100 d-flex">
             <Title values={{ t, isShow }} />
             <ChannelsBox values={{
-              t, isShow, data, channels, currentChannelId,
+              t, isShow, channels, currentChannelId,
             }}
             />
           </div>

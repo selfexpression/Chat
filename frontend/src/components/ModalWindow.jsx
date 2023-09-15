@@ -9,7 +9,7 @@ import { useTranslation } from 'react-i18next';
 import 'react-toastify/dist/ReactToastify.css';
 import { useApi } from '../hooks/index.js';
 import {
-  getData, getModal, getChannelById,
+  getChannelsInfo, getModal, getChannelById,
 } from '../utils/selectors.js';
 import { handleClose } from '../controllers/index.js';
 import notify from '../utils/notify.js';
@@ -235,7 +235,7 @@ const RenameChannel = ({ values }) => {
 const ModalWindow = () => {
   const { t } = useTranslation();
   const { isShow, type, currentId } = useSelector(getModal);
-  const { channels } = useSelector(getData);
+  const { channels } = useSelector(getChannelsInfo);
 
   const mappingModals = {
     newChannel: <NewChannel values={{

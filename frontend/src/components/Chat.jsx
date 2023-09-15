@@ -1,12 +1,12 @@
 import React, { useRef } from 'react';
 import { useSelector } from 'react-redux';
 import { useFormik } from 'formik';
+import filter from 'leo-profanity';
 import { ArrowRightSquare } from 'react-bootstrap-icons';
 import { Button, Form, InputGroup } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
 import { useAuth, useApi } from '../hooks/index.js';
 import { messagesSelectors } from '../slices/messagesSlice.js';
-import profanityFilter from '../utils/badWords.js';
 
 const MessagesBox = ({ currentChannelMessages }) => (
   <div id="messages-box" className="chat-messages overflow-auto px-5 ">
@@ -51,7 +51,7 @@ const Chat = ({ current }) => {
       body: '',
     },
     onSubmit: ({ body }, { setSubmitting, resetForm }) => {
-      const filteredWords = profanityFilter(body);
+      const filteredWords = filter.clean(body);
       const newMessage = {
         body: filteredWords,
         channelId: current.id,

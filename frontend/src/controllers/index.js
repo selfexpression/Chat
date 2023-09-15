@@ -1,9 +1,9 @@
 import store from '../slices/index.js';
-import { actions as dataActions } from '../slices/dataSlice.js';
+import { actions as channelsInfoActions } from '../slices/channelsInfoSlice.js';
 import { actions as modalActions } from '../slices/modalSlice.js';
 
 export const handleChannel = (id) => () => {
-  store.dispatch(dataActions.setChannel(id));
+  store.dispatch(channelsInfoActions.setChannel(id));
 };
 
 export const handleShow = (type, value) => () => {
@@ -19,5 +19,5 @@ export const handleClose = (value) => () => {
 };
 
 export const handleLoadingData = (data) => {
-  store.dispatch(dataActions.addData(data));
+  store.dispatch(channelsInfoActions.addChannels(data));
 };

@@ -1,13 +1,13 @@
-export const getData = (state) => state.data;
+export const getChannelsInfo = (state) => state.channelsInfo;
 
 export const getModal = (state) => state.modal;
 
 export const getLastChannelId = (state) => state
-  .data
+  .channelsInfo
   .channels
   .at(-1);
 
 export const getChannelById = (id) => (state) => state
-  .data
+  .channelsInfo
   .channels
   .find((channel) => channel.id === id);

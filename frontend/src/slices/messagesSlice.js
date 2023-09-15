@@ -1,6 +1,6 @@
 /* eslint-disable no-param-reassign */
 import { createSlice, createEntityAdapter } from '@reduxjs/toolkit';
-import { actions as dataActions } from './dataSlice';
+import { actions as channelsInfoActions } from './channelsInfoSlice';
 
 const messagesAdapter = createEntityAdapter();
 const initialState = messagesAdapter.getInitialState();
@@ -13,7 +13,7 @@ const slice = createSlice({
     removeMessages: messagesAdapter.removeMany,
   },
   extraReducers: (builder) => {
-    builder.addCase(dataActions.removeChannel, (state, action) => {
+    builder.addCase(channelsInfoActions.removeChannel, (state, action) => {
       const { payload: channelId } = action;
       const allMessages = Object.values(state.entities);
       const currentMessagesIds = allMessages

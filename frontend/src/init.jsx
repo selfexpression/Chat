@@ -6,6 +6,7 @@ import i18next from 'i18next';
 // import LanguageDetector from 'i18next-browser-languagedetector';
 import { Provider as RollbarProvider, ErrorBoundary } from '@rollbar/react';
 import { Provider } from 'react-redux';
+import filter from 'leo-profanity';
 import App from './components/App.jsx';
 import store, { actions } from './slices/index.js';
 import { ApiContext } from './contexts/index.js';
@@ -49,6 +50,10 @@ const runApp = async () => {
         escapeValue: false,
       },
     });
+
+  filter.add(filter.getDictionary('en'));
+  filter.add(filter.getDictionary('fr'));
+  filter.add(filter.getDictionary('ru'));
 
   const rollbarConfig = {
     accessToken: process.env.ROLLBAR_ACCESS_TOKEN,
