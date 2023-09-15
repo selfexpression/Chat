@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import { useFormik } from 'formik';
 import filter from 'leo-profanity';
@@ -44,7 +44,9 @@ const Chat = ({ current }) => {
   const { sendMessage } = useApi();
   const inputRef = useRef(null);
 
-  setTimeout(() => inputRef.current.focus());
+  useEffect(() => {
+    setTimeout(() => inputRef.current?.focus());
+  }, []);
 
   const formik = useFormik({
     initialValues: {

@@ -9,7 +9,7 @@ import { useTranslation } from 'react-i18next';
 import 'react-toastify/dist/ReactToastify.css';
 import { useApi } from '../hooks/index.js';
 import {
-  getChannelsInfo, getModal, getChannelById, getLastChannelId, getCurrentChannel,
+  getChannelsInfo, getModal, getChannelById, getLastChannelId,
 } from '../utils/selectors.js';
 import { actions as channelsInfoActions } from '../slices/channelsInfoSlice.js';
 import { actions as modalActions } from '../slices/modalSlice.js';
@@ -28,18 +28,15 @@ const schema = (t, channels) => Yup.object().shape({
 });
 
 const NewChannel = ({ values }) => {
-  const {
-    handleClose, t, channels,
-  } = values;
+  const { handleClose, channels } = values;
+  const { t } = useTranslation();
   const newChannelId = useSelector(getLastChannelId) + 1;
   const dispatch = useDispatch();
   const { addChannel } = useApi();
   const inputRef = useRef(null);
 
   useEffect(() => {
-    setTimeout(() => {
-      inputRef.current?.focus();
-    });
+    setTimeout(() => inputRef.current?.focus());
   }, []);
 
   const formik = useFormik({
@@ -113,7 +110,8 @@ const NewChannel = ({ values }) => {
 };
 
 const RemoveChannel = ({ values }) => {
-  const { id: currentId, t, handleClose } = values;
+  const { t } = useTranslation();
+  const { currentId, handleClose } = values;
   const { removeChannel } = useApi();
 
   return (
@@ -156,17 +154,14 @@ const RemoveChannel = ({ values }) => {
 };
 
 const RenameChannel = ({ values }) => {
-  const {
-    channels, t, id, handleClose,
-  } = values;
+  const { channels, currentId, handleClose } = values;
+  const { t } = useTranslation();
   const { renameChannel } = useApi();
-  const currentChannel = useSelector(getChannelById(id));
+  const currentChannel = useSelector(getChannelById(currentId));
   const inputRef = useRef(null);
 
   useEffect(() => {
-    setTimeout(() => {
-      inputRef.current?.select();
-    });
+    setTimeout(() => inputRef.current?.select());
   }, []);
 
   const formik = useFormik({
@@ -175,7 +170,7 @@ const RenameChannel = ({ values }) => {
     },
     validationSchema: schema(t, channels),
     onSubmit: async ({ name }, { setSubmitting }) => {
-      await renameChannel(id, name);
+      await renameChannel(currentId, name);
       setSubmitting(false);
       handleClose();
       notify('success', t, 'toast.renameChannel');
@@ -239,10 +234,8 @@ const RenameChannel = ({ values }) => {
 };
 
 const ModalWindow = () => {
-  const { t } = useTranslation();
-  const { isShow, type } = useSelector(getModal);
+  const { isShow, type, currentId } = useSelector(getModal);
   const { channels } = useSelector(getChannelsInfo);
-  const { id } = useSelector(getCurrentChannel);
   const dispatch = useDispatch();
 
   const handleClose = () => {
@@ -250,18 +243,9 @@ const ModalWindow = () => {
   };
 
   const mappingModals = {
-    newChannel: <NewChannel values={{
-      handleClose, t, channels,
-    }}
-    />,
-    removeChannel: <RemoveChannel values={{
-      t, handleClose, id,
-    }}
-    />,
-    renameChannel: <RenameChannel values={{
-      channels, t, id, handleClose,
-    }}
-    />,
+    newChannel: <NewChannel values={{ handleClose, channels }} />,
+    removeChannel: <RemoveChannel values={{ handleClose, currentId }} />,
+    renameChannel: <RenameChannel values={{ channels, currentId, handleClose }} />,
   };
 
   const ModalComponent = mappingModals[type];

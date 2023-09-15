@@ -5,6 +5,7 @@ import {
 } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../hooks/index.js';
+import routes from '../utils/routes.js';
 
 const NavBar = () => {
   const { t, i18n } = useTranslation();
@@ -13,7 +14,7 @@ const NavBar = () => {
 
   const handleLogout = () => {
     auth.logout();
-    navigate('/login');
+    navigate(routes.loginPagePath());
   };
 
   const handleLangSwitch = () => {
@@ -22,7 +23,7 @@ const NavBar = () => {
     i18n.changeLanguage(lang);
   };
 
-  const userId = localStorage.getItem('userId');
+  // const userId = localStorage.getItem('userId');
 
   return (
     <Navbar bg="white" expand="lg" className="shadow-sm">
@@ -38,7 +39,12 @@ const NavBar = () => {
             </NavDropdown>
           </div>
           <div className="mr-2" />
-          <Navbar.Brand href={!userId ? '/login' : '/'} className="mx-2">
+          <Navbar.Brand
+            href={!auth.user
+              ? routes.loginPagePath()
+              : routes.chatPagePath()}
+            className="mx-2"
+          >
             <img
               alt={t('navBar.logoAlt')}
               src="./favicon.ico"
@@ -50,7 +56,7 @@ const NavBar = () => {
             {t('navBar.logoText')}
           </Navbar.Brand>
         </div>
-        {!userId
+        {!auth.user
           ? ''
           : (
             <Button

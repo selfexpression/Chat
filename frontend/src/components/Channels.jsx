@@ -1,6 +1,6 @@
 /* eslint-disable no-confusing-arrow */
 import axios from 'axios';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { PlusSquare } from 'react-bootstrap-icons';
 import {
@@ -13,7 +13,6 @@ import Chat from './Chat.jsx';
 import { useAuth } from '../hooks/index.js';
 import ModalWindow from './ModalWindow.jsx';
 import { getCurrentChannel, getModal, getChannelsInfo } from '../utils/selectors.js';
-import { handleLoadingData } from '../controllers/index.js';
 import { actions as channelsInfoActions } from '../slices/channelsInfoSlice';
 import { actions as modalActions } from '../slices/modalSlice.js';
 import notify from '../utils/notify.js';
@@ -25,7 +24,8 @@ const types = {
 };
 
 const Title = ({ values }) => {
-  const { t, handleSelectModal } = values;
+  const { t } = useTranslation();
+  const { handleSelectModal, currentChannelId } = values;
 
   return (
     <div className="d-flex mt-1 justify-content-between mb-2 ps-4 pe-2 p-4">
@@ -34,7 +34,7 @@ const Title = ({ values }) => {
         type="button"
         variant="group-vertical"
         className="p-0 text-primary"
-        onClick={handleSelectModal(types.newChannel)}
+        onClick={handleSelectModal(types.newChannel, currentChannelId)}
       >
         <PlusSquare size={20} />
         <span className="visually-hidden">+</span>
@@ -45,11 +45,16 @@ const Title = ({ values }) => {
 
 const ChannelsBox = ({ values }) => {
   const {
-    t, handleSelectModal, handleChannel, channels, currentChannelId,
+    handleSelectModal, channels, currentChannelId,
   } = values;
-
+  const dispatch = useDispatch();
+  const { t } = useTranslation();
   const variants = (id, currentId) => id === currentId ? 'secondary' : '';
   const typeNames = ['remove', 'rename'];
+
+  const handleChannel = (id) => () => {
+    dispatch(channelsInfoActions.setChannel(id));
+  };
 
   return (
     <ul id="channels-box" className="nav flex-column nav-pills nav-fill px-2 mb-3 overflow-auto h-100 d-block">
@@ -104,7 +109,6 @@ const ChannelsBox = ({ values }) => {
 
 const Channels = () => {
   const { t } = useTranslation();
-  const [channelsInfoLoaded, setChannelsInfoLoaded] = useState(false);
   const { isShow } = useSelector(getModal);
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -113,13 +117,6 @@ const Channels = () => {
   const { channels, currentChannelId } = useSelector(getChannelsInfo);
 
   useEffect(() => {
-    const userId = localStorage.getItem('userId');
-
-    if (!userId) {
-      navigate('/login');
-      return;
-    }
-
     const getAxiosData = async () => {
       const headers = auth.getAuthHeader();
       const response = await axios.get(routes.dataPath(), { headers })
@@ -128,31 +125,24 @@ const Channels = () => {
             ? t('toast.networkError')
             : t('toast.requestError');
 
-          setChannelsInfoLoaded(false);
           notify('error', t, errorPath);
         });
 
-      handleLoadingData(response.data);
-      setChannelsInfoLoaded(true);
+      dispatch(channelsInfoActions.addChannels(response.data));
     };
 
     getAxiosData();
-  }, [auth, t, navigate]);
+  }, [auth, t, navigate, isShow, dispatch]);
 
-  if (!channelsInfoLoaded) return null;
-  // if (!currentChannel) return null;
+  if (!currentChannel) return null;
 
   const handleShow = () => {
     dispatch(modalActions.modalShow());
   };
 
-  const handleSelectModal = (type) => () => {
-    dispatch(modalActions.modalSelect(type));
+  const handleSelectModal = (type, id) => () => {
+    dispatch(modalActions.modalSelect({ type, id }));
     handleShow();
-  };
-
-  const handleChannel = (id) => () => {
-    dispatch(channelsInfoActions.setChannel(id));
   };
 
   return (
@@ -161,11 +151,8 @@ const Channels = () => {
       <div className="container h-100 my-4 overflow-hidden rounded shadow">
         <div className="row h-100 bg-white flex-md-row">
           <div className="col-4 col-md-2 border-end px-0 bg-light flex-column h-100 d-flex">
-            <Title values={{ t, handleSelectModal }} />
-            <ChannelsBox values={{
-              t, handleSelectModal, handleChannel, channels, currentChannelId,
-            }}
-            />
+            <Title values={{ handleSelectModal, currentChannelId }} />
+            <ChannelsBox values={{ handleSelectModal, channels, currentChannelId }} />
           </div>
           <Chat current={currentChannel} />
         </div>

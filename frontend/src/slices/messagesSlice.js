@@ -11,17 +11,23 @@ const slice = createSlice({
   reducers: {
     addMessage: messagesAdapter.addOne,
     removeMessages: messagesAdapter.removeMany,
+    addMessages: messagesAdapter.addMany,
   },
   extraReducers: (builder) => {
-    builder.addCase(channelsInfoActions.removeChannel, (state, action) => {
-      const { payload: channelId } = action;
-      const allMessages = Object.values(state.entities);
-      const currentMessagesIds = allMessages
-        .filter((message) => message.channelId === channelId)
-        .map(({ id }) => id);
+    builder
+      .addCase(channelsInfoActions.removeChannel, (state, action) => {
+        const { payload: channelId } = action;
+        const allMessages = Object.values(state.entities);
+        const currentMessagesIds = allMessages
+          .filter((message) => message.channelId === channelId)
+          .map(({ id }) => id);
 
-      messagesAdapter.removeMany(state, currentMessagesIds);
-    });
+        messagesAdapter.removeMany(state, currentMessagesIds);
+      })
+      .addCase(channelsInfoActions.addChannels, (state, action) => {
+        const { messages } = action.payload;
+        messagesAdapter.addMany(state, messages);
+      });
   },
 });
 
