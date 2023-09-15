@@ -1,7 +1,7 @@
 /* eslint-disable no-confusing-arrow */
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { PlusSquare } from 'react-bootstrap-icons';
 import {
   Button, Dropdown, ButtonGroup,
@@ -12,10 +12,10 @@ import routes from '../utils/routes.js';
 import Chat from './Chat.jsx';
 import { useAuth } from '../hooks/index.js';
 import ModalWindow from './ModalWindow.jsx';
-import { getChannelsInfo, getModal } from '../utils/selectors.js';
-import {
-  handleChannel, handleCurrentModal, handleShow, handleLoadingData,
-} from '../controllers/index.js';
+import { getCurrentChannel, getModal, getChannelsInfo } from '../utils/selectors.js';
+import { handleLoadingData } from '../controllers/index.js';
+import { actions as channelsInfoActions } from '../slices/channelsInfoSlice';
+import { actions as modalActions } from '../slices/modalSlice.js';
 import notify from '../utils/notify.js';
 
 const types = {
@@ -25,7 +25,7 @@ const types = {
 };
 
 const Title = ({ values }) => {
-  const { t, isShow } = values;
+  const { t, handleSelectModal } = values;
 
   return (
     <div className="d-flex mt-1 justify-content-between mb-2 ps-4 pe-2 p-4">
@@ -34,7 +34,7 @@ const Title = ({ values }) => {
         type="button"
         variant="group-vertical"
         className="p-0 text-primary"
-        onClick={handleShow(types.newChannel, isShow)}
+        onClick={handleSelectModal(types.newChannel)}
       >
         <PlusSquare size={20} />
         <span className="visually-hidden">+</span>
@@ -45,7 +45,7 @@ const Title = ({ values }) => {
 
 const ChannelsBox = ({ values }) => {
   const {
-    t, isShow, channels, currentChannelId,
+    t, handleSelectModal, handleChannel, channels, currentChannelId,
   } = values;
 
   const variants = (id, currentId) => id === currentId ? 'secondary' : '';
@@ -78,7 +78,7 @@ const ChannelsBox = ({ values }) => {
                   {typeNames.map((type) => (
                     <Dropdown.Item
                       key={type}
-                      onClick={handleCurrentModal(types[`${type}Channel`], isShow, id)}
+                      onClick={handleSelectModal(types[`${type}Channel`], id)}
                     >
                       {t(`channels.${type}Channel`)}
                     </Dropdown.Item>
@@ -107,8 +107,10 @@ const Channels = () => {
   const [channelsInfoLoaded, setChannelsInfoLoaded] = useState(false);
   const { isShow } = useSelector(getModal);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const auth = useAuth();
-  const channelsInfo = useSelector(getChannelsInfo);
+  const currentChannel = useSelector(getCurrentChannel);
+  const { channels, currentChannelId } = useSelector(getChannelsInfo);
 
   useEffect(() => {
     const userId = localStorage.getItem('userId');
@@ -126,6 +128,7 @@ const Channels = () => {
             ? t('toast.networkError')
             : t('toast.requestError');
 
+          setChannelsInfoLoaded(false);
           notify('error', t, errorPath);
         });
 
@@ -137,9 +140,20 @@ const Channels = () => {
   }, [auth, t, navigate]);
 
   if (!channelsInfoLoaded) return null;
+  // if (!currentChannel) return null;
 
-  const { channels, currentChannelId } = channelsInfo;
-  const currentChannel = channels.find((channel) => channel.id === currentChannelId);
+  const handleShow = () => {
+    dispatch(modalActions.modalShow());
+  };
+
+  const handleSelectModal = (type) => () => {
+    dispatch(modalActions.modalSelect(type));
+    handleShow();
+  };
+
+  const handleChannel = (id) => () => {
+    dispatch(channelsInfoActions.setChannel(id));
+  };
 
   return (
     <>
@@ -147,9 +161,9 @@ const Channels = () => {
       <div className="container h-100 my-4 overflow-hidden rounded shadow">
         <div className="row h-100 bg-white flex-md-row">
           <div className="col-4 col-md-2 border-end px-0 bg-light flex-column h-100 d-flex">
-            <Title values={{ t, isShow }} />
+            <Title values={{ t, handleSelectModal }} />
             <ChannelsBox values={{
-              t, isShow, channels, currentChannelId,
+              t, handleSelectModal, handleChannel, channels, currentChannelId,
             }}
             />
           </div>

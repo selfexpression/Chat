@@ -4,18 +4,20 @@ import { createSlice } from '@reduxjs/toolkit';
 const initialState = {
   isShow: false,
   type: null,
-  currentlId: null,
 };
 
 const slice = createSlice({
   name: 'modal',
   initialState,
   reducers: {
-    modalControl: (state, { payload }) => {
-      const { value, type, currentId } = payload;
-      state.isShow = value;
-      state.type = type;
-      state.currentId = currentId;
+    modalSelect: (state, { payload }) => {
+      state.type = payload;
+    },
+    modalShow: (state) => {
+      state.isShow = true;
+    },
+    modalClose: (state) => {
+      state.isShow = false;
     },
   },
 });

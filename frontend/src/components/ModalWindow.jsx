@@ -1,5 +1,5 @@
 import React, { useRef, useEffect } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import {
   Button, Modal, Form, FormControl,
 } from 'react-bootstrap';
@@ -9,9 +9,10 @@ import { useTranslation } from 'react-i18next';
 import 'react-toastify/dist/ReactToastify.css';
 import { useApi } from '../hooks/index.js';
 import {
-  getChannelsInfo, getModal, getChannelById,
+  getChannelsInfo, getModal, getChannelById, getLastChannelId, getCurrentChannel,
 } from '../utils/selectors.js';
-import { handleClose } from '../controllers/index.js';
+import { actions as channelsInfoActions } from '../slices/channelsInfoSlice.js';
+import { actions as modalActions } from '../slices/modalSlice.js';
 import notify from '../utils/notify.js';
 
 const schema = (t, channels) => Yup.object().shape({
@@ -27,7 +28,11 @@ const schema = (t, channels) => Yup.object().shape({
 });
 
 const NewChannel = ({ values }) => {
-  const { isShow, channels, t } = values;
+  const {
+    handleClose, t, channels,
+  } = values;
+  const newChannelId = useSelector(getLastChannelId) + 1;
+  const dispatch = useDispatch();
   const { addChannel } = useApi();
   const inputRef = useRef(null);
 
@@ -35,17 +40,18 @@ const NewChannel = ({ values }) => {
     setTimeout(() => {
       inputRef.current?.focus();
     });
-  }, [isShow]);
+  }, []);
 
   const formik = useFormik({
     initialValues: {
       name: '',
     },
     validationSchema: schema(t, channels),
-    onSubmit: ({ name }, { setSubmitting }) => {
-      addChannel(name);
+    onSubmit: async ({ name }, { setSubmitting }) => {
+      await addChannel(name);
+      dispatch(channelsInfoActions.setChannel(newChannelId));
+      handleClose();
       setSubmitting(false);
-      handleClose(isShow)();
       notify('success', t, 'toast.createChannel');
     },
   });
@@ -57,7 +63,7 @@ const NewChannel = ({ values }) => {
         <Button
           variant="close"
           type="button"
-          onClick={handleClose(isShow)}
+          onClick={handleClose}
           aria-label="Close"
           data-bs-dismiss="modal"
         />
@@ -86,7 +92,7 @@ const NewChannel = ({ values }) => {
               <Button
                 variant="secondary"
                 className="me-2"
-                onClick={handleClose(isShow)}
+                onClick={handleClose}
               >
                 {t('newChannel.cancelButton')}
               </Button>
@@ -107,7 +113,7 @@ const NewChannel = ({ values }) => {
 };
 
 const RemoveChannel = ({ values }) => {
-  const { id, isShow, t } = values;
+  const { id: currentId, t, handleClose } = values;
   const { removeChannel } = useApi();
 
   return (
@@ -119,7 +125,7 @@ const RemoveChannel = ({ values }) => {
           type="button"
           aria-label="Close"
           data-bs-dismiss="modal"
-          onClick={handleClose(isShow)}
+          onClick={handleClose}
         />
       </Modal.Header>
       <Modal.Body>
@@ -128,16 +134,16 @@ const RemoveChannel = ({ values }) => {
           <Button
             variant="secondary"
             className="me-2"
-            onClick={handleClose(isShow)}
+            onClick={handleClose}
           >
             {t('removeChannel.cancelButton')}
           </Button>
           <Button
             variant="danger"
             className="me-2"
-            onClick={() => {
-              removeChannel(id);
-              handleClose(isShow)();
+            onClick={async () => {
+              await removeChannel(currentId);
+              handleClose();
               notify('success', t, 'toast.removeChannel');
             }}
           >
@@ -151,7 +157,7 @@ const RemoveChannel = ({ values }) => {
 
 const RenameChannel = ({ values }) => {
   const {
-    id, isShow, channels, t,
+    channels, t, id, handleClose,
   } = values;
   const { renameChannel } = useApi();
   const currentChannel = useSelector(getChannelById(id));
@@ -168,10 +174,10 @@ const RenameChannel = ({ values }) => {
       name: currentChannel.name,
     },
     validationSchema: schema(t, channels),
-    onSubmit: ({ name }, { setSubmitting }) => {
-      renameChannel(id, name);
+    onSubmit: async ({ name }, { setSubmitting }) => {
+      await renameChannel(id, name);
       setSubmitting(false);
-      handleClose(isShow)();
+      handleClose();
       notify('success', t, 'toast.renameChannel');
     },
   });
@@ -183,7 +189,7 @@ const RenameChannel = ({ values }) => {
         <Button
           variant="close"
           type="button"
-          onClick={handleClose(isShow)}
+          onClick={handleClose}
           aria-label="Close"
           data-bs-dismiss="modal"
         />
@@ -212,7 +218,7 @@ const RenameChannel = ({ values }) => {
               <Button
                 variant="secondary"
                 className="me-2"
-                onClick={handleClose(isShow)}
+                onClick={handleClose}
               >
                 {t('renameChannel.cancelButton')}
               </Button>
@@ -234,20 +240,26 @@ const RenameChannel = ({ values }) => {
 
 const ModalWindow = () => {
   const { t } = useTranslation();
-  const { isShow, type, currentId } = useSelector(getModal);
+  const { isShow, type } = useSelector(getModal);
   const { channels } = useSelector(getChannelsInfo);
+  const { id } = useSelector(getCurrentChannel);
+  const dispatch = useDispatch();
+
+  const handleClose = () => {
+    dispatch(modalActions.modalClose());
+  };
 
   const mappingModals = {
     newChannel: <NewChannel values={{
-      isShow, channels, t,
+      handleClose, t, channels,
     }}
     />,
     removeChannel: <RemoveChannel values={{
-      id: currentId, isShow, t,
+      t, handleClose, id,
     }}
     />,
     renameChannel: <RenameChannel values={{
-      id: currentId, isShow, channels, t,
+      channels, t, id, handleClose,
     }}
     />,
   };

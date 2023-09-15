@@ -2,7 +2,7 @@ export default {
   translation: {
     lang: {
       currentLang: 'EN',
-      changeLang: 'Russian',
+      changeLang: 'Русский',
     },
     channels: {
       title: 'Channels',
