@@ -44,8 +44,8 @@ const NewChannel = ({ values }) => {
     },
     validationSchema: schema(t, channels),
     onSubmit: async ({ name }, { setSubmitting }) => {
-      await createChannel(name);
-      dispatch(channelsInfoActions.setChannel());
+      const data = await createChannel(name);
+      dispatch(channelsInfoActions.setChannel(data.id));
       handleClose();
       setSubmitting(false);
       notify('success', t, 'toast.createChannel');

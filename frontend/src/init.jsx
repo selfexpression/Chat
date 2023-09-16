@@ -16,10 +16,42 @@ const runApp = async () => {
   const socket = io();
 
   const socketAPI = {
-    sendMessage: (payload) => socket.emit('newMessage', payload),
-    removeChannel: (id) => socket.emit('removeChannel', { id }),
-    createChannel: (name) => socket.emit('newChannel', { name }),
-    renameChannel: (id, name) => socket.emit('renameChannel', { id, name }),
+    sendMessage: (payload) => new Promise((resolve, reject) => {
+      socket.emit('newMessage', payload, (response, error) => {
+        if (response.status === 'ok') {
+          resolve(response.data);
+        }
+
+        reject(error);
+      });
+    }),
+    removeChannel: (id) => new Promise((resolve, reject) => {
+      socket.emit('removeChannel', { id }, (response, error) => {
+        if (response.status === 'ok') {
+          resolve(response.data);
+        }
+
+        reject(error);
+      });
+    }),
+    createChannel: (name) => new Promise((resolve, reject) => {
+      socket.emit('newChannel', { name }, (response, error) => {
+        if (response.status === 'ok') {
+          resolve(response.data);
+        }
+
+        reject(error);
+      });
+    }),
+    renameChannel: (id, name) => new Promise((resolve, reject) => {
+      socket.emit('renameChannel', { id, name }, (response, error) => {
+        if (response.status === 'ok') {
+          resolve(response.data);
+        }
+
+        reject(error);
+      });
+    }),
   };
 
   socket.on('newMessage', (payload) => {
