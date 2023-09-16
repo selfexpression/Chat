@@ -9,9 +9,9 @@ import { useTranslation } from 'react-i18next';
 import 'react-toastify/dist/ReactToastify.css';
 import { useApi } from '../hooks/index.js';
 import {
-  getChannelsInfo, getModal, getChannelById, getLastChannelId,
+  getChannelsInfo, getModal, getChannelById,
 } from '../utils/selectors.js';
-import { actions as channelsInfoActions } from '../slices/channelsInfoSlice.js';
+// import { actions as channelsInfoActions } from '../slices/channelsInfoSlice.js';
 import { actions as modalActions } from '../slices/modalSlice.js';
 import notify from '../utils/notify.js';
 
@@ -30,9 +30,8 @@ const schema = (t, channels) => Yup.object().shape({
 const NewChannel = ({ values }) => {
   const { handleClose, channels } = values;
   const { t } = useTranslation();
-  const newChannelId = useSelector(getLastChannelId) + 1;
-  const dispatch = useDispatch();
-  const { addChannel } = useApi();
+  // const dispatch = useDispatch();
+  const { createChannel } = useApi();
   const inputRef = useRef(null);
 
   useEffect(() => {
@@ -45,8 +44,7 @@ const NewChannel = ({ values }) => {
     },
     validationSchema: schema(t, channels),
     onSubmit: async ({ name }, { setSubmitting }) => {
-      await addChannel(name);
-      dispatch(channelsInfoActions.setChannel(newChannelId));
+      await createChannel(name);
       handleClose();
       setSubmitting(false);
       notify('success', t, 'toast.createChannel');

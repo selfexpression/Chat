@@ -23,8 +23,6 @@ const NavBar = () => {
     i18n.changeLanguage(lang);
   };
 
-  // const userId = localStorage.getItem('userId');
-
   return (
     <Navbar bg="white" expand="lg" className="shadow-sm">
       <Container>
@@ -61,7 +59,7 @@ const NavBar = () => {
           : (
             <Button
               type="button"
-              className="btn-primary"
+              className="btn-info"
               onClick={handleLogout}
             >
               {t('navBar.logoutButton')}

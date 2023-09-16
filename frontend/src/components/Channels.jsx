@@ -49,7 +49,7 @@ const ChannelsBox = ({ values }) => {
   } = values;
   const dispatch = useDispatch();
   const { t } = useTranslation();
-  const variants = (id, currentId) => id === currentId ? 'secondary' : '';
+  const variants = (id, currentId) => id === currentId ? 'info' : '';
   const typeNames = ['remove', 'rename'];
 
   const handleChannel = (id) => () => {
@@ -132,7 +132,7 @@ const Channels = () => {
     };
 
     getAxiosData();
-  }, [auth, t, navigate, isShow, dispatch]);
+  }, [auth, t, navigate, dispatch]);
 
   if (!currentChannel) return null;
 
@@ -154,7 +154,7 @@ const Channels = () => {
             <Title values={{ handleSelectModal, currentChannelId }} />
             <ChannelsBox values={{ handleSelectModal, channels, currentChannelId }} />
           </div>
-          <Chat current={currentChannel} />
+          <Chat currentChannel={currentChannel} />
         </div>
       </div>
     </>

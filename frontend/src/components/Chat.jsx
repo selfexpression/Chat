@@ -1,3 +1,4 @@
+/* eslint-disable no-confusing-arrow */
 import React, { useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import { useFormik } from 'formik';
@@ -8,19 +9,32 @@ import { useTranslation } from 'react-i18next';
 import { useAuth, useApi } from '../hooks/index.js';
 import { messagesSelectors } from '../slices/messagesSlice.js';
 
-const MessagesBox = ({ currentChannelMessages }) => (
-  <div id="messages-box" className="chat-messages overflow-auto px-5 ">
-    {currentChannelMessages.map(({ body, id, username }) => (
-      <div key={id} className="text-break mb-2">
-        <b>{username}</b>
-        {': '}
-        {body}
-      </div>
-    ))}
-  </div>
-);
+const MessagesBox = ({ currentChannelMessages }) => {
+  const auth = useAuth();
+  const colorName = (username) => auth.user === username ? 'text-dark' : 'text-muted';
 
-const ChannelInfo = ({ currentChannelMessages, current }) => {
+  return (
+    <div id="messages-box" className="chat-messages overflow-auto px-5 ">
+      {currentChannelMessages.map(({ body, id, username }) => (
+        <div key={id} className="text-break mb-2">
+          <div
+            className={`message-bg rounded-1 p-2 ${
+              auth.user === username ? 'bg-user' : 'bg-info'
+            }`}
+            style={{ marginLeft: auth.user === username ? '50px' : '0' }}
+          >
+            <b className={colorName(username)}>{username}</b>
+            <span className={colorName(username)}>:</span>
+            {' '}
+            <span className={colorName(username)}>{body}</span>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+};
+
+const ChannelInfo = ({ currentChannelMessages, currentChannel }) => {
   const { t } = useTranslation();
   const messageCount = currentChannelMessages.length;
 
@@ -29,7 +43,7 @@ const ChannelInfo = ({ currentChannelMessages, current }) => {
       <p className="m-0">
         #
         {' '}
-        <b>{current.name}</b>
+        <b>{currentChannel.name}</b>
       </p>
       <span className="text-muted">
         {t('channels.messageCount', { count: messageCount })}
@@ -38,7 +52,7 @@ const ChannelInfo = ({ currentChannelMessages, current }) => {
   );
 };
 
-const Chat = ({ current }) => {
+const Chat = ({ currentChannel }) => {
   const { t } = useTranslation();
   const { user } = useAuth();
   const { sendMessage } = useApi();
@@ -56,7 +70,7 @@ const Chat = ({ current }) => {
       const filteredWords = filter.clean(body);
       const newMessage = {
         body: filteredWords,
-        channelId: current.id,
+        channelId: currentChannel.id,
         username: user,
       };
 
@@ -67,13 +81,20 @@ const Chat = ({ current }) => {
   });
 
   const messages = useSelector(messagesSelectors.selectAll);
-  const currentChannelMessages = messages.filter((message) => message.channelId === current.id);
+  const currentChannelMessages = messages
+    .filter((message) => message.channelId === currentChannel.id);
 
   return (
     <div className="col p-0 h-100">
       <div className="d-flex flex-column h-100">
-        <ChannelInfo currentChannelMessages={currentChannelMessages} current={current} />
-        <MessagesBox messages={messages} currentChannelMessages={currentChannelMessages} />
+        <ChannelInfo
+          currentChannelMessages={currentChannelMessages}
+          currentChannel={currentChannel}
+        />
+        <MessagesBox
+          messages={messages}
+          currentChannelMessages={currentChannelMessages}
+        />
         <div className="mt-auto px-5 py-3">
           <Form
             noValidate

@@ -18,7 +18,7 @@ const runApp = async () => {
   const socketAPI = {
     sendMessage: (payload) => socket.emit('newMessage', payload),
     removeChannel: (id) => socket.emit('removeChannel', { id }),
-    addChannel: (name) => socket.emit('newChannel', { name }),
+    createChannel: (name) => socket.emit('newChannel', { name }),
     renameChannel: (id, name) => socket.emit('renameChannel', { id, name }),
   };
 
@@ -57,6 +57,7 @@ const runApp = async () => {
 
   const rollbarConfig = {
     accessToken: process.env.ROLLBAR_ACCESS_TOKEN,
+    enabled: process.env.NODE_ENV === 'production',
     captureUncaught: true,
     captureUnhandledRejections: true,
   };
