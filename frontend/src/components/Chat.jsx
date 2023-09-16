@@ -1,33 +1,52 @@
 /* eslint-disable no-confusing-arrow */
 import React, { useEffect, useRef } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useFormik } from 'formik';
 import filter from 'leo-profanity';
 import { ArrowRightSquare } from 'react-bootstrap-icons';
-import { Button, Form, InputGroup } from 'react-bootstrap';
+import {
+  Button, Form, InputGroup, OverlayTrigger, Popover,
+} from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
 import { useAuth, useApi } from '../hooks/index.js';
-import { messagesSelectors } from '../slices/messagesSlice.js';
+import { messagesSelectors, actions } from '../slices/messagesSlice.js';
 
 const MessagesBox = ({ currentChannelMessages }) => {
   const auth = useAuth();
+  const dispatch = useDispatch();
   const colorName = (username) => auth.user === username ? 'text-dark' : 'text-muted';
+  const trigger = (username) => auth.user === username ? 'focus' : '';
+
+  const handleRemove = (id) => () => {
+    dispatch(actions.removeMessage(id));
+  };
+
+  const popover = (id) => (
+    <Popover id="popover-basic">
+      <Button variant="outline-secondary" className="small-button">Изменить</Button>
+      <Button variant="outline-danger" onClick={handleRemove(id)} className="small-button">Удалить</Button>
+    </Popover>
+  );
 
   return (
     <div id="messages-box" className="chat-messages overflow-auto px-5 ">
       {currentChannelMessages.map(({ body, id, username }) => (
         <div key={id} className="text-break mb-2">
-          <div
-            className={`message-bg rounded-1 p-2 ${
-              auth.user === username ? 'bg-user' : 'bg-info'
-            }`}
-            style={{ marginLeft: auth.user === username ? '50px' : '0' }}
-          >
-            <b className={colorName(username)}>{username}</b>
-            <span className={colorName(username)}>:</span>
-            {' '}
-            <span className={colorName(username)}>{body}</span>
-          </div>
+          <OverlayTrigger key={id} trigger={trigger(username)} placement="top" overlay={popover(id)}>
+            <div
+              role="button"
+              tabIndex="0"
+              className={`message-bg rounded-3 p-2 ${
+                auth.user === username ? 'bg-user' : 'bg-info'
+              }`}
+              style={{ marginLeft: auth.user === username ? '50px' : '0' }}
+            >
+              <b className={colorName(username)}>{username}</b>
+              <span className={colorName(username)}>:</span>
+              {' '}
+              <span className={colorName(username)}>{body}</span>
+            </div>
+          </OverlayTrigger>
         </div>
       ))}
     </div>

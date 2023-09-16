@@ -49,6 +49,7 @@ const ChannelsBox = ({ values }) => {
   } = values;
   const dispatch = useDispatch();
   const { t } = useTranslation();
+  const auth = useAuth();
   const variants = (id, currentId) => id === currentId ? 'info' : '';
   const typeNames = ['remove', 'rename'];
 
@@ -58,9 +59,11 @@ const ChannelsBox = ({ values }) => {
 
   return (
     <ul id="channels-box" className="nav flex-column nav-pills nav-fill px-2 mb-3 overflow-auto h-100 d-block">
-      {channels.map(({ id, name, removable }) => (
+      {channels.map(({
+        id, name, removable, owner,
+      }) => (
         <li key={id} className="nav-item w-100">
-          {removable
+          {removable && auth.user === owner
             ? (
               <Dropdown as={ButtonGroup} className="d-flex">
                 <Button

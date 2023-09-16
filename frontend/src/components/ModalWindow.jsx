@@ -7,7 +7,7 @@ import * as Yup from 'yup';
 import { useFormik } from 'formik';
 import { useTranslation } from 'react-i18next';
 import 'react-toastify/dist/ReactToastify.css';
-import { useApi } from '../hooks/index.js';
+import { useApi, useAuth } from '../hooks/index.js';
 import {
   getChannelsInfo, getModal, getChannelById,
 } from '../utils/selectors.js';
@@ -29,6 +29,7 @@ const schema = (t, channels) => Yup.object().shape({
 
 const NewChannel = ({ values }) => {
   const { handleClose, channels } = values;
+  const { user: owner } = useAuth();
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const { createChannel } = useApi();
@@ -44,7 +45,7 @@ const NewChannel = ({ values }) => {
     },
     validationSchema: schema(t, channels),
     onSubmit: async ({ name }, { setSubmitting }) => {
-      const data = await createChannel(name);
+      const data = await createChannel({ name, owner });
       dispatch(channelsInfoActions.setChannel(data.id));
       handleClose();
       setSubmitting(false);

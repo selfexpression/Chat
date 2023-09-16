@@ -4,3 +4,7 @@
 .bg-user {
   background-color: lightcyan;
 }
+.small-button {
+  font-size: 12px;
+  padding: 4px 8px;
+}

@@ -34,8 +34,8 @@ const runApp = async () => {
         reject(error);
       });
     }),
-    createChannel: (name) => new Promise((resolve, reject) => {
-      socket.emit('newChannel', { name }, (response, error) => {
+    createChannel: ({ name, owner }) => new Promise((resolve, reject) => {
+      socket.emit('newChannel', { name, owner }, (response, error) => {
         if (response.status === 'ok') {
           resolve(response.data);
         }

@@ -12,6 +12,7 @@ const slice = createSlice({
     addMessage: messagesAdapter.addOne,
     removeMessages: messagesAdapter.removeMany,
     addMessages: messagesAdapter.addMany,
+    removeMessage: messagesAdapter.removeOne,
   },
   extraReducers: (builder) => {
     builder
