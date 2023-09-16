@@ -11,7 +11,7 @@ import { useApi } from '../hooks/index.js';
 import {
   getChannelsInfo, getModal, getChannelById,
 } from '../utils/selectors.js';
-// import { actions as channelsInfoActions } from '../slices/channelsInfoSlice.js';
+import { actions as channelsInfoActions } from '../slices/channelsInfoSlice.js';
 import { actions as modalActions } from '../slices/modalSlice.js';
 import notify from '../utils/notify.js';
 
@@ -30,7 +30,7 @@ const schema = (t, channels) => Yup.object().shape({
 const NewChannel = ({ values }) => {
   const { handleClose, channels } = values;
   const { t } = useTranslation();
-  // const dispatch = useDispatch();
+  const dispatch = useDispatch();
   const { createChannel } = useApi();
   const inputRef = useRef(null);
 
@@ -45,6 +45,7 @@ const NewChannel = ({ values }) => {
     validationSchema: schema(t, channels),
     onSubmit: async ({ name }, { setSubmitting }) => {
       await createChannel(name);
+      dispatch(channelsInfoActions.setChannel());
       handleClose();
       setSubmitting(false);
       notify('success', t, 'toast.createChannel');

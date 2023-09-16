@@ -1,7 +1,7 @@
 /* eslint-disable no-param-reassign */
 import { createSlice } from '@reduxjs/toolkit';
 
-const initialState = { channels: [], currentChannelId: null, newId: null };
+const initialState = { channels: [], currentChannelId: null };
 const defaultChannelId = 1;
 
 const slice = createSlice({
@@ -19,7 +19,6 @@ const slice = createSlice({
     addChannel: (state, { payload }) => {
       state.channels = [...state.channels, payload];
       state.currentChannelId = payload.id;
-      state.newId = payload.id;
     },
     removeChannel: (state, { payload }) => {
       const { id } = payload;
