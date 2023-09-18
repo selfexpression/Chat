@@ -7,7 +7,6 @@ import {
   Button, Dropdown, ButtonGroup,
 } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
 import routes from '../utils/routes.js';
 import Chat from './Chat.jsx';
 import { useAuth } from '../hooks/index.js';
@@ -23,9 +22,9 @@ const types = {
   renameChannel: 'renameChannel',
 };
 
-const Title = ({ values }) => {
+const Title = ({ handleShow }) => {
   const { t } = useTranslation();
-  const { handleSelectModal, currentChannelId } = values;
+  const { currentChannelId } = useSelector(getChannelsInfo);
 
   return (
     <div className="d-flex mt-1 justify-content-between mb-2 ps-4 pe-2 p-4">
@@ -34,7 +33,7 @@ const Title = ({ values }) => {
         type="button"
         variant="group-vertical"
         className="p-0 text-primary"
-        onClick={handleSelectModal(types.newChannel, currentChannelId)}
+        onClick={handleShow(types.newChannel, currentChannelId)}
       >
         <PlusSquare size={20} />
         <span className="visually-hidden">+</span>
@@ -43,10 +42,8 @@ const Title = ({ values }) => {
   );
 };
 
-const ChannelsBox = ({ values }) => {
-  const {
-    handleSelectModal, channels, currentChannelId,
-  } = values;
+const ChannelsBox = ({ handleShow }) => {
+  const { channels, currentChannelId } = useSelector(getChannelsInfo);
   const dispatch = useDispatch();
   const { t } = useTranslation();
   const auth = useAuth();
@@ -86,7 +83,7 @@ const ChannelsBox = ({ values }) => {
                   {typeNames.map((type) => (
                     <Dropdown.Item
                       key={type}
-                      onClick={handleSelectModal(types[`${type}Channel`], id)}
+                      onClick={handleShow(types[`${type}Channel`], id)}
                     >
                       {t(`channels.${type}Channel`)}
                     </Dropdown.Item>
@@ -110,42 +107,52 @@ const ChannelsBox = ({ values }) => {
   );
 };
 
+const axiosError = (error, logout, t) => {
+  switch (error.code) {
+    case 'ERR_BAD_REQUEST':
+      logout();
+      notify('error', t, 'toast.requestError');
+      break;
+    case 'ERR_NETWORK': {
+      notify('error', t, 'toast.networkError');
+      break;
+    }
+    default: {
+      notify('error', t, 'toast.requestError');
+      break;
+    }
+  }
+};
+
 const Channels = () => {
   const { t } = useTranslation();
   const { isShow } = useSelector(getModal);
-  const navigate = useNavigate();
   const dispatch = useDispatch();
-  const auth = useAuth();
+  const { logout, getAuthHeader } = useAuth();
   const currentChannel = useSelector(getCurrentChannel);
-  const { channels, currentChannelId } = useSelector(getChannelsInfo);
 
   useEffect(() => {
     const getAxiosData = async () => {
-      const headers = auth.getAuthHeader();
+      const headers = getAuthHeader();
       const response = await axios.get(routes.dataPath(), { headers })
         .catch((error) => {
-          const errorPath = error.code === 'ERR_NETWORK'
-            ? t('toast.networkError')
-            : t('toast.requestError');
-
-          notify('error', t, errorPath);
+          axiosError(error, logout, t);
         });
+
+      if (!response) {
+        return;
+      }
 
       dispatch(channelsInfoActions.addChannels(response.data));
     };
 
     getAxiosData();
-  }, [auth, t, navigate, dispatch]);
+  }, [dispatch, getAuthHeader, logout, t]);
 
   if (!currentChannel) return null;
 
-  const handleShow = () => {
-    dispatch(modalActions.modalShow());
-  };
-
-  const handleSelectModal = (type, id) => () => {
-    dispatch(modalActions.modalSelect({ type, id }));
-    handleShow();
+  const handleShow = (type, id) => () => {
+    dispatch(modalActions.modalShow({ type, id }));
   };
 
   return (
@@ -154,10 +161,10 @@ const Channels = () => {
       <div className="container h-100 my-4 overflow-hidden rounded shadow">
         <div className="row h-100 bg-white flex-md-row">
           <div className="col-4 col-md-2 border-end px-0 bg-light flex-column h-100 d-flex">
-            <Title values={{ handleSelectModal, currentChannelId }} />
-            <ChannelsBox values={{ handleSelectModal, channels, currentChannelId }} />
+            <Title handleShow={handleShow} />
+            <ChannelsBox handleShow={handleShow} />
           </div>
-          <Chat currentChannel={currentChannel} />
+          <Chat />
         </div>
       </div>
     </>

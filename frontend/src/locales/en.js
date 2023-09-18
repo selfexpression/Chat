@@ -19,6 +19,7 @@ export default {
       deleteMessage: 'Delete',
       changeMessage: 'Edit',
       editingMessagePlaceholder: 'Enter modified message',
+      label: 'New message',
     },
     login: {
       title: 'Log In',

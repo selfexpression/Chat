@@ -1,6 +1,8 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable no-confusing-arrow */
-import React, { useEffect, useRef, useState } from 'react';
+import React, {
+  useEffect, useRef, useState,
+} from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useFormik } from 'formik';
 import filter from 'leo-profanity';
@@ -11,12 +13,16 @@ import {
 import { useTranslation } from 'react-i18next';
 import { useAuth, useApi } from '../hooks/index.js';
 import { messagesSelectors, actions } from '../slices/messagesSlice.js';
+import { getCurrentChannel, getCurrentChannelMessages } from '../utils/selectors.js';
 
-const MessagesBox = ({ currentChannelMessages }) => {
+const MessagesBox = () => {
   const [editingMessage, setEditingMessage] = useState({ messageId: null, editing: false });
   const auth = useAuth();
   const dispatch = useDispatch();
   const { t } = useTranslation();
+  const currentChannel = useSelector(getCurrentChannel);
+  const messages = useSelector(messagesSelectors.selectAll);
+  const currentChannelMessages = getCurrentChannelMessages(currentChannel, messages);
 
   const currentMessage = currentChannelMessages
     .find((message) => message.id === editingMessage.messageId);
@@ -135,8 +141,11 @@ const MessagesBox = ({ currentChannelMessages }) => {
   );
 };
 
-const ChannelInfo = ({ currentChannelMessages, currentChannel }) => {
+const ChannelInfo = () => {
   const { t } = useTranslation();
+  const currentChannel = useSelector(getCurrentChannel);
+  const messages = useSelector(messagesSelectors.selectAll);
+  const currentChannelMessages = getCurrentChannelMessages(currentChannel, messages);
   const messageCount = currentChannelMessages.length;
 
   return (
@@ -153,7 +162,8 @@ const ChannelInfo = ({ currentChannelMessages, currentChannel }) => {
   );
 };
 
-const Chat = ({ currentChannel }) => {
+const Chat = () => {
+  const currentChannel = useSelector(getCurrentChannel);
   const { t } = useTranslation();
   const { user } = useAuth();
   const { sendMessage } = useApi();
@@ -182,16 +192,12 @@ const Chat = ({ currentChannel }) => {
   });
 
   const messages = useSelector(messagesSelectors.selectAll);
-  const currentChannelMessages = messages
-    .filter((message) => message.channelId === currentChannel.id);
+  const currentChannelMessages = getCurrentChannelMessages(currentChannel, messages);
 
   return (
     <div className="col p-0 h-100">
       <div className="d-flex flex-column h-100">
-        <ChannelInfo
-          currentChannelMessages={currentChannelMessages}
-          currentChannel={currentChannel}
-        />
+        <ChannelInfo />
         <MessagesBox
           messages={messages}
           currentChannelMessages={currentChannelMessages}
@@ -207,7 +213,7 @@ const Chat = ({ currentChannel }) => {
                 name="body"
                 id="body"
                 type="text"
-                aria-label="Новое сообщение"
+                aria-label={t('chat.label')}
                 placeholder={t('chat.newMessagePlaceholder')}
                 className="border-0 p-0 ps-2 rounded-2"
                 onChange={formik.handleChange}

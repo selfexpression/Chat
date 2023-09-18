@@ -27,8 +27,8 @@ const schema = (t, channels) => Yup.object().shape({
     }),
 });
 
-const NewChannel = ({ values }) => {
-  const { handleClose, channels } = values;
+const NewChannel = ({ handleClose }) => {
+  const { channels } = useSelector(getChannelsInfo);
   const { user: owner } = useAuth();
   const { t } = useTranslation();
   const dispatch = useDispatch();
@@ -109,9 +109,9 @@ const NewChannel = ({ values }) => {
   );
 };
 
-const RemoveChannel = ({ values }) => {
+const RemoveChannel = ({ handleClose }) => {
   const { t } = useTranslation();
-  const { currentId, handleClose } = values;
+  const { currentId } = useSelector(getModal);
   const { removeChannel } = useApi();
 
   return (
@@ -153,8 +153,9 @@ const RemoveChannel = ({ values }) => {
   );
 };
 
-const RenameChannel = ({ values }) => {
-  const { channels, currentId, handleClose } = values;
+const RenameChannel = ({ handleClose }) => {
+  const { currentId } = useSelector(getModal);
+  const { channels } = useSelector(getChannelsInfo);
   const { t } = useTranslation();
   const { renameChannel } = useApi();
   const currentChannel = useSelector(getChannelById(currentId));
@@ -234,8 +235,7 @@ const RenameChannel = ({ values }) => {
 };
 
 const ModalWindow = () => {
-  const { isShow, type, currentId } = useSelector(getModal);
-  const { channels } = useSelector(getChannelsInfo);
+  const { isShow, type } = useSelector(getModal);
   const dispatch = useDispatch();
 
   const handleClose = () => {
@@ -243,9 +243,9 @@ const ModalWindow = () => {
   };
 
   const mappingModals = {
-    newChannel: <NewChannel values={{ handleClose, channels }} />,
-    removeChannel: <RemoveChannel values={{ handleClose, currentId }} />,
-    renameChannel: <RenameChannel values={{ channels, currentId, handleClose }} />,
+    newChannel: <NewChannel handleClose={handleClose} />,
+    removeChannel: <RemoveChannel handleClose={handleClose} />,
+    renameChannel: <RenameChannel handleClose={handleClose} />,
   };
 
   const ModalComponent = mappingModals[type];

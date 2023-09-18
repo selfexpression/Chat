@@ -11,12 +11,10 @@ const slice = createSlice({
   name: 'modal',
   initialState,
   reducers: {
-    modalSelect: (state, { payload }) => {
+    modalShow: (state, { payload }) => {
       const { type, id } = payload;
       state.type = type;
       state.currentId = id;
-    },
-    modalShow: (state) => {
       state.isShow = true;
     },
     modalClose: (state) => {

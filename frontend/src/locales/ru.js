@@ -21,6 +21,7 @@ export default {
       deleteMessage: 'Удалить',
       changeMessage: 'Изменить',
       editingMessagePlaceholder: 'Ввведите изменённое сообщение',
+      label: 'Новое сообщение',
     },
     login: {
       title: 'Вход',
