@@ -18,6 +18,9 @@ export default {
     chat: {
       newMessagePlaceholder: 'Введите новое сообщение...',
       sendButton: 'Отправить',
+      deleteMessage: 'Удалить',
+      changeMessage: 'Изменить',
+      editingMessagePlaceholder: 'Ввведите изменённое сообщение',
     },
     login: {
       title: 'Вход',

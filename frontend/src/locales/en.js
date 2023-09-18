@@ -16,6 +16,9 @@ export default {
     chat: {
       newMessagePlaceholder: 'Enter a new message...',
       sendButton: 'Send',
+      deleteMessage: 'Delete',
+      changeMessage: 'Edit',
+      editingMessagePlaceholder: 'Enter modified message',
     },
     login: {
       title: 'Log In',
