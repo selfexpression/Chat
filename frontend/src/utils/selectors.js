@@ -1,6 +1,3 @@
-// import { useSelector } from 'react-redux';
-// import { messagesSelectors } from '../slices/messagesSlice.js';
-
 export const getChannelsInfo = (state) => state.channelsInfo;
 
 export const getModal = (state) => state.modal;
